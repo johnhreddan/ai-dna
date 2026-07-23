@@ -1,0 +1,21 @@
+AI-DNA VERSION 3.3 — AESTHETIC REFINEMENT
+
+Implemented:
+- Larger, clearer sector titles with clean wrapping.
+- Taller, better-spaced card headers.
+- Full company-name wrapping inside company chips.
+- Expanded display names for Tokyo Ohka Kogyo and Nippon Sanso Holdings.
+- New sector-specific emblem system using multiple visual families.
+- Refined card borders, shadows, spacing, typography and proportions.
+- Additional Bloomberg-style polish for the working company popup.
+- Updated browser title to Version 3.3.
+
+Preserved:
+- Yahoo Finance serverless data flow.
+- Alpha Vantage fundamentals integration.
+- Vercel configuration.
+- Company popup behavior and live chart/quote logic.
+- Existing sector/company data keys and interactions.
+
+Deployment:
+Upload the contents of this folder to the existing GitHub repository, replacing the corresponding files. Vercel should redeploy automatically.

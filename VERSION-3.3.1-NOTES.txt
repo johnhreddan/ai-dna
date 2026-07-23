@@ -1,0 +1,15 @@
+AI-DNA VERSION 3.3.1 — APPROVED VISUAL IMPLEMENTATION
+
+This package corrects the prior aesthetic pass and implements the approved visual direction in the actual working interface.
+
+Changes:
+- Six-column professional desktop card layout at wide-screen sizes
+- Taller sector cards with a dedicated, readable header zone
+- Larger sector emblems and sector titles
+- Full company names with clean two-line wrapping
+- Larger company chips and ticker badges
+- Improved spacing, alignment, borders, shadows, and proportions
+- Cache-busting references for CSS and JavaScript
+- Working Yahoo Finance and Alpha Vantage data flow preserved
+
+Upload the contents inside this folder to the repository root and commit to main.
