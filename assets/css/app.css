@@ -228,3 +228,124 @@ body{background:radial-gradient(circle at 50% -12%,#173e64 0,#071827 40%,#030a12
 .sector-symbol text{fill:#05101d;font-size:7px;font-weight:950;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:rgba(255,255,255,.28);stroke-width:.4}
 .sector-card .sector-symbol svg{transform:none!important}
 .brand-name{hyphens:none}
+
+/* =========================================================
+   AI-DNA v3.3.3 — One-Screen Desktop Edition
+   Preserve all 40 sectors in an 8 x 5 matrix while retaining
+   the distinctive sector emblems and readable full names.
+   ========================================================= */
+@media (min-width: 901px) {
+  html, body { height: 100%; overflow: hidden; }
+  .app {
+    width: 100%;
+    max-width: none;
+    height: 100vh;
+    padding: clamp(5px,.55vh,8px) clamp(7px,.65vw,12px);
+    grid-template-rows: auto auto minmax(0,1fr);
+    gap: clamp(4px,.5vh,7px);
+  }
+  header { min-height: 0; align-items: center; }
+  h1 { font-size: clamp(24px,2vw,36px); line-height: .9; }
+  .tag { font-size: clamp(10px,.65vw,12px); margin-top: 3px; }
+  .tools { gap: 5px; flex-wrap: nowrap; }
+  .tools input,.tools select,.tools button {
+    height: clamp(27px,3.1vh,32px);
+    padding: 0 clamp(7px,.55vw,10px);
+    font-size: clamp(9px,.62vw,11px);
+  }
+  .tools input { width: clamp(165px,12vw,220px); }
+  .statusbar {
+    min-height: 0;
+    padding: clamp(3px,.4vh,5px) 8px;
+    font-size: clamp(8px,.56vw,10px);
+  }
+  .grid {
+    grid-template-columns: repeat(8,minmax(0,1fr));
+    grid-template-rows: repeat(5,minmax(0,1fr));
+    gap: clamp(4px,.42vw,7px);
+    height: 100%;
+    min-height: 0;
+  }
+  .sector-card {
+    border-radius: clamp(8px,.65vw,11px);
+    padding: clamp(3px,.33vw,5px);
+    grid-template-rows: minmax(0,46%) minmax(0,54%);
+  }
+  .sector-head { justify-content: center; overflow: visible; }
+  .sector-symbol {
+    width: clamp(27px,2.25vw,39px);
+    height: clamp(27px,2.25vw,39px);
+    margin-bottom: 0;
+  }
+  .sector-symbol svg {
+    width: clamp(27px,2.25vw,39px);
+    height: clamp(27px,2.25vw,39px);
+  }
+  .sector-name {
+    width: 100%;
+    margin-top: 1px;
+    padding: 0 2px;
+    font-size: clamp(9px,.72vw,13px);
+    line-height: .96;
+    letter-spacing: -.18px;
+    text-wrap: balance;
+    overflow-wrap: normal;
+  }
+  .update {
+    right: 0;
+    top: 0;
+    min-width: clamp(15px,1vw,18px);
+    height: clamp(15px,1vw,18px);
+    font-size: clamp(8px,.5vw,9px);
+  }
+  .brands {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-template-rows: repeat(2,minmax(0,1fr));
+    gap: clamp(2px,.19vw,3px);
+  }
+  .brand {
+    min-height: 0;
+    height: 100%;
+    border-radius: clamp(4px,.35vw,6px);
+    gap: clamp(2px,.24vw,4px);
+    padding: 1px clamp(2px,.25vw,4px);
+    overflow: hidden;
+  }
+  .brand-mark {
+    width: clamp(16px,1.25vw,21px);
+    height: clamp(16px,1.25vw,21px);
+    border-radius: 4px;
+    font-size: clamp(6px,.46vw,8px);
+    line-height: 1;
+  }
+  .brand-name {
+    min-width: 0;
+    flex: 1 1 auto;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    font-size: clamp(6.2px,.48vw,8.6px);
+    line-height: .93;
+    letter-spacing: -.12px;
+    text-align: left;
+  }
+}
+
+/* Slightly tighter treatment for shorter laptop-height viewports. */
+@media (min-width: 901px) and (max-height: 820px) {
+  .app { padding-top: 4px; padding-bottom: 4px; gap: 3px; }
+  h1 { font-size: 23px; }
+  .tag { font-size: 9px; }
+  .tools input,.tools select,.tools button { height: 26px; }
+  .statusbar { padding-top: 2px; padding-bottom: 2px; }
+  .sector-card { grid-template-rows: minmax(0,44%) minmax(0,56%); }
+  .sector-symbol,.sector-symbol svg { width: 27px; height: 27px; }
+  .sector-name { font-size: 9px; }
+  .brand-mark { width: 16px; height: 16px; }
+  .brand-name { font-size: 6.2px; }
+}

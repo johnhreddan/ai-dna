@@ -1,0 +1,17 @@
+AI-DNA Version 3.3.3 — One-Screen Desktop Edition
+
+Purpose
+- Keeps all 40 sectors visible simultaneously in an 8-column by 5-row matrix.
+- Retains the 40 distinctive sector emblems introduced in Version 3.3.2.
+- Preserves the working Yahoo Finance and Alpha Vantage data flow.
+
+Visual refinements
+- Responsive card, emblem, title, chip, and font sizing based on viewport dimensions.
+- Full company names may wrap onto two compact lines instead of using ellipses.
+- Sector titles remain centered and readable while the complete ecosystem stays on one screen.
+- Additional height optimization for laptop displays.
+
+Upload
+Upload all files and folders in this package to the repository root, replacing matching files.
+Suggested commit message: AI-DNA Version 3.3.3 one-screen refinement
+After Vercel reports Ready, use Ctrl+F5 once.
