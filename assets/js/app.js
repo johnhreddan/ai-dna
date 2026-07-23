@@ -7,6 +7,29 @@ let activeView='Industrial View';
 
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
+const companyDisplayNames={
+ "ASM Int'l":'ASM International','ASML':'ASML Holding','Arm':'Arm Holdings','DNP':'Dai Nippon Printing',
+ 'Fanuc':'FANUC','Global Unichip':'Global Unichip Corporation','HPE':'Hewlett Packard Enterprise',
+ 'JCET':'JCET Group','JPMorgan':'JPMorgan Chase','Nippon Sanso':'Nippon Sanso Holdings',
+ 'Palo Alto':'Palo Alto Networks','Quanta':'Quanta Computer','Rockwell':'Rockwell Automation',
+ 'SCREEN':'SCREEN Holdings','Shin-Etsu':'Shin-Etsu Chemical','Supermicro':'Super Micro Computer',
+ 'Tokyo Ohka':'Tokyo Ohka Kogyo','Toppan':'TOPPAN Holdings','UMC':'United Microelectronics',
+ 'UnitedHealth':'UnitedHealth Group','Wacker Chemie':'Wacker Chemie AG','Wistron':'Wistron Corporation',
+ 'BHP':'BHP Group','BASF':'BASF SE','Canon':'Canon Inc.','Dell':'Dell Technologies',
+ 'Fujifilm':'FUJIFILM Holdings','Hoya':'HOYA Corporation','KLA':'KLA Corporation',
+ 'Linde':'Linde plc','Merck KGaA':'Merck KGaA','Nanya':'Nanya Technology','Nikon':'Nikon Corporation',
+ 'Nova':'Nova Ltd.','Resonac':'Resonac Holdings','SAP':'SAP SE','SUMCO':'SUMCO Corporation',
+ 'Teck':'Teck Resources','Vale':'Vale S.A.','Vistra':'Vistra Corp.','Walmart':'Walmart Inc.'
+};
+const displayCompanyName=name=>companyDisplayNames[name]||name;
+document.querySelectorAll('.brand').forEach(btn=>{
+ const full=displayCompanyName(btn.dataset.company);
+ const nameEl=btn.querySelector('.brand-name');
+ if(nameEl)nameEl.textContent=full;
+ btn.title=full;
+ btn.setAttribute('aria-label',full);
+});
+
 const sectorPurpose={
 'Critical Minerals':'mining and refining strategic minerals used in chips, power systems, batteries and precision electronics',
 'Copper & Metals':'supplying conductive metals required for grids, data centers, networking equipment and semiconductor facilities',
@@ -48,32 +71,58 @@ const sectorPurpose={
 };
 function sectorIcon(index,name){
  const initials=name.split(/\s+/).filter(x=>x!=='&').map(x=>x[0]).join('').slice(0,2).toUpperCase();
- const hue=(index*43+18)%360, accent=(hue+78)%360, accent2=(hue+156)%360;
- const style=`--symbol-core:hsl(${hue} 76% 56%);--symbol-accent:hsl(${accent} 88% 66%);--symbol-accent-2:hsl(${accent2} 84% 64%)`;
- const label=`<circle class="icon-core" cx="24" cy="24" r="7.2"/><circle class="icon-core-ring" cx="24" cy="24" r="9.4"/><text x="24" y="24">${initials}</text>`;
- const nodes=(count=8,r=18)=>Array.from({length:count},(_,i)=>{const a=(i/count)*Math.PI*2-Math.PI/2;return `<circle class="node" cx="${(24+Math.cos(a)*r).toFixed(2)}" cy="${(24+Math.sin(a)*r).toFixed(2)}" r="1.65"/>`}).join('');
- let art='';
- const n=name.toLowerCase();
- if(/mineral|metal|material|chemical|resist/.test(n)){
-  art=`<path class="facet" d="M24 3 39 12 42 29 31 43 14 42 5 28 9 11Z"/><path class="fine" d="M9 11 24 24 39 12M5 28l19-4 7 19M14 42l10-18 18 5"/>${nodes(7,20)}`;
- }else if(/gas|cooling|power|grid|nuclear|utilities/.test(n)){
-  art=`<path class="orbit" d="M5 24c4-13 15-19 25-15 12 4 17 17 11 27-6 10-20 12-29 4"/><path class="orbit alt" d="M9 12c11 4 20 14 27 29M8 37c8-13 18-22 31-28"/>${nodes(9,19)}`;
- }else if(/wafer|mask|lithography|optical/.test(n)){
-  art=`<circle class="disc" cx="24" cy="24" r="19"/><circle class="fine" cx="24" cy="24" r="14"/><path class="beam" d="M4 29 44 13M7 35 41 20M13 43 39 29"/><circle class="lens" cx="24" cy="24" r="11"/>`;
- }else if(/deposition|etch|metrology|foundr|packaging/.test(n)){
-  art=`<path class="chip" d="M10 10h28v28H10z"/><path class="fine" d="M15 15h18v18H15zM5 15h5M5 24h5M5 33h5M38 15h5M38 24h5M38 33h5M15 5v5M24 5v5M33 5v5M15 38v5M24 38v5M33 38v5"/>${nodes(4,19)}`;
- }else if(/software|cloud|model|application|cyber/.test(n)){
-  art=`<path class="network" d="M7 18 16 8l11 5 11-7 5 13-8 10 4 11-15 3-12-7-7-11Z"/><path class="fine" d="M7 18l17 6L16 8m8 16 14-18m-14 18 15 16M24 24 12 36"/>${nodes(6,19)}`;
- }else if(/memory|storage|server|data center|infrastructure/.test(n)){
-  art=`<ellipse class="stack" cx="24" cy="11" rx="15" ry="5"/><path class="stack" d="M9 11v23c0 3 7 6 15 6s15-3 15-6V11M9 20c0 3 7 6 15 6s15-3 15-6M9 28c0 3 7 6 15 6s15-3 15-6"/><path class="fine" d="M14 14h20M14 23h20M14 32h20"/>`;
- }else if(/network|switch|rack/.test(n)){
-  art=`<path class="hex" d="M24 3 42 13v22L24 45 6 35V13Z"/><path class="fine" d="M24 3v42M6 13l36 22M42 13 6 35"/>${nodes(6,20)}`;
- }else if(/robot|end user/.test(n)){
-  art=`<path class="arm" d="M8 37h13v6H8zm7-3 7-10 7 4-5 9m5-9 5-12 7 3-4 13M34 16l-4-7 5-5 7 4-1 11"/>${nodes(5,20)}`;
- }else{
-  art=`<path class="gear" d="M24 4l4 4 6-1 2 6 6 2-1 6 4 4-4 4 1 6-6 2-2 6-6-1-4 4-4-4-6 1-2-6-6-2 1-6-4-4 4-4-1-6 6-2 2-6 6 1Z"/><circle class="fine" cx="24" cy="24" r="15"/>`;
- }
- return `<svg viewBox="0 0 48 48" style="${style}" role="img" aria-label="${esc(name)} sector emblem"><defs><linearGradient id="g${index}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--symbol-accent)"/><stop offset="1" stop-color="var(--symbol-accent-2)"/></linearGradient><filter id="glow${index}"><feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#glow${index})">${art}${label}</g></svg>`;
+ const hue=(index*47+12)%360, accent=(hue+72)%360, accent2=(hue+154)%360;
+ const style=`--symbol-core:hsl(${hue} 78% 55%);--symbol-accent:hsl(${accent} 90% 66%);--symbol-accent-2:hsl(${accent2} 86% 64%)`;
+ const core=(shape='circle')=>shape==='hex'
+   ? `<path class="icon-core" d="M24 15l8 4.6v8.8L24 33l-8-4.6v-8.8z"/><path class="icon-core-ring" d="M24 12l11 6.3v11.4L24 36l-11-6.3V18.3z"/>`
+   : `<circle class="icon-core" cx="24" cy="24" r="7.2"/><circle class="icon-core-ring" cx="24" cy="24" r="9.6"/>`;
+ const label=(shape='circle')=>`${core(shape)}<text x="24" y="24">${initials}</text>`;
+ const nodes=(pts,r=19)=>pts.map((a,i)=>{const x=(24+Math.cos(a*Math.PI/180)*r).toFixed(2),y=(24+Math.sin(a*Math.PI/180)*r).toFixed(2);return `<circle class="node" cx="${x}" cy="${y}" r="${i%3===0?1.85:1.45}"/>`}).join('');
+ const pinRing=()=>[-135,-90,-45,0,45,90,135,180].map(a=>{const x1=24+Math.cos(a*Math.PI/180)*14,y1=24+Math.sin(a*Math.PI/180)*14,x2=24+Math.cos(a*Math.PI/180)*20,y2=24+Math.sin(a*Math.PI/180)*20;return `<path class="fine" d="M${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}"/>`;}).join('');
+ const designs={
+  'Critical Minerals':()=>`<path class="facet" d="M24 3 40 13 38 34 24 45 8 34 6 13Z"/><path class="fine" d="M6 13l18 11 16-11M8 34l16-10 14 10M24 3v42"/>${nodes([-110,-55,5,65,120,175],20)}${label('hex')}`,
+  'Copper & Metals':()=>`<path class="stack" d="M8 31h12v8H8zm14-6h12v14H22zm-8-9h12v9H14z"/><path class="fine" d="M8 31l6-4h12l8-2M14 16l6-5 6 5"/>${nodes([-80,-20,35,95,155,210],20)}${label()}`,
+  'Industrial Gases':()=>`<circle class="orbit" cx="13" cy="15" r="5"/><circle class="orbit alt" cx="36" cy="13" r="4"/><circle class="orbit" cx="38" cy="34" r="5"/><circle class="orbit alt" cx="11" cy="35" r="4"/><path class="fine" d="M17 18l12 3m4-5-6 9m7 6-8-3m-8 4 5-5"/>${label()}`,
+  'Silicon Materials':()=>`<circle class="disc" cx="24" cy="24" r="20"/><path class="facet" d="M24 5 39 14 36 35 24 43 10 35 8 14Z"/><path class="fine" d="M8 14l16 10 15-10M10 35l14-11 12 11M24 5v38"/>${label('hex')}`,
+  'Semiconductor Wafers':()=>`<ellipse class="disc" cx="24" cy="11" rx="15" ry="5"/><path class="stack" d="M9 11v22c0 4 7 7 15 7s15-3 15-7V11M9 18c0 4 7 7 15 7s15-3 15-7M9 26c0 4 7 7 15 7s15-3 15-7"/>${label()}`,
+  'Photomasks':()=>`<rect class="chip" x="7" y="7" width="34" height="34" rx="5"/><path class="beam" d="M11 16h26M11 24h26M11 32h26M16 11v26M24 11v26M32 11v26"/><circle class="lens" cx="24" cy="24" r="11"/>${label()}`,
+  'Photoresists':()=>`<path class="disc" d="M24 4a20 20 0 1 1-14 6"/><path class="beam" d="M7 33 36 4M13 41 43 11M5 23 23 5"/><path class="fine" d="M32 12l5 5-17 17-7 2 2-7z"/>${label()}`,
+  'Specialty Chemicals':()=>`<path class="facet" d="M18 5h12v5l8 13c5 8-1 18-10 18h-8c-9 0-15-10-10-18l8-13z"/><path class="fine" d="M14 27h20M17 20c4 3 10 3 14 0"/>${nodes([-120,-60,0,60,120,180],20)}${label()}`,
+  'Lithography':()=>`<path class="beam" d="M5 12h13l6 12 7-15h12M7 38l17-14 17 14"/><path class="lens" d="M14 17c6-7 14-7 20 0-6 7-14 7-20 0Z"/><path class="fine" d="M9 31h30M12 35h24"/>${label()}`,
+  'Deposition':()=>`<path class="chip" d="M8 10h32v26H8z"/><path class="fine" d="M12 15h24M12 20h24M12 25h24M12 30h24"/>${pinRing()}${label('hex')}`,
+  'Etch & Clean':()=>`<path class="chip" d="M8 9h32v30H8z"/><path class="beam" d="M12 14h24M12 34h24M16 14v20M24 14v20M32 14v20"/><path class="fine" d="M5 6l5 5M43 6l-5 5M5 42l5-5M43 42l-5-5"/>${label()}`,
+  'Metrology':()=>`<circle class="disc" cx="24" cy="24" r="18"/><path class="fine" d="M24 6v36M6 24h36M11 11l26 26M37 11 11 37"/><circle class="lens" cx="24" cy="24" r="13"/>${nodes([-90,0,90,180],20)}${label()}`,
+  'EDA Software':()=>`<path class="network" d="M8 9h32v30H8z"/><path class="fine" d="M13 15h9v8h13v10H21v-6h-8z"/>${nodes([-135,-45,45,135],20)}${label('hex')}`,
+  'Chip IP':()=>`<path class="chip" d="M11 11h26v26H11z"/>${pinRing()}<path class="fine" d="M17 17h14v14H17zM17 21h14M21 17v14"/>${label('hex')}`,
+  'Foundries':()=>`<path class="disc" d="M24 4a20 20 0 1 1-14 6"/><path class="fine" d="M8 18h32M8 24h32M10 30h28M17 8v32M24 5v38M31 8v32"/>${label()}`,
+  'Advanced Packaging':()=>`<path class="stack" d="M8 34h32v7H8zm4-10h24v8H12zm5-10h14v8H17z"/><path class="fine" d="M12 24l5-2m19 2-5-2M17 14l4-4h6l4 4"/>${nodes([-140,-40,40,140],20)}${label('hex')}`,
+  'AI Accelerators':()=>`<path class="chip" d="M9 9h30v30H9z"/>${pinRing()}<path class="network" d="M16 30c2-9 5-14 8-14s6 5 8 14M18 25h12M20 20h8"/>${label()}`,
+  'Custom Silicon':()=>`<path class="gear" d="M24 4l4 4 6-1 2 6 6 2-1 6 4 4-4 4 1 6-6 2-2 6-6-1-4 4-4-4-6 1-2-6-6-2 1-6-4-4 4-4-1-6 6-2 2-6 6 1Z"/><path class="fine" d="M14 24h20M24 14v20M17 17l14 14M31 17 17 31"/>${label()}`,
+  'HBM Memory':()=>`<path class="stack" d="M12 8h24v8H12zm-3 11h30v8H9zm-3 11h36v9H6z"/><path class="fine" d="M16 11h16M13 22h22M10 34h28"/>${label()}`,
+  'Storage':()=>`<ellipse class="stack" cx="24" cy="10" rx="14" ry="5"/><path class="stack" d="M10 10v25c0 4 6 7 14 7s14-3 14-7V10M10 20c0 4 6 7 14 7s14-3 14-7M10 29c0 4 6 7 14 7s14-3 14-7"/>${label()}`,
+  'Networking Silicon':()=>`<path class="hex" d="M24 3 42 13v22L24 45 6 35V13Z"/><path class="fine" d="M24 3v42M6 13l36 22M42 13 6 35"/>${nodes([-90,-30,30,90,150,210],20)}${label('hex')}`,
+  'Optical Links':()=>`<circle class="lens" cx="24" cy="24" r="11"/><path class="beam" d="M3 24h10m22 0h10M7 12l9 6m16 12 9 6M7 36l9-6m16-12 9-6"/>${nodes([-90,-45,0,45,90,135,180,225],20)}${label()}`,
+  'Switching':()=>`<rect class="chip" x="7" y="12" width="34" height="24" rx="4"/><path class="fine" d="M12 18h24M12 24h24M12 30h24M16 15v18M24 15v18M32 15v18"/>${nodes([-135,-45,45,135],21)}${label()}`,
+  'Servers':()=>`<rect class="stack" x="8" y="6" width="32" height="10" rx="2"/><rect class="stack" x="8" y="19" width="32" height="10" rx="2"/><rect class="stack" x="8" y="32" width="32" height="10" rx="2"/><path class="fine" d="M13 11h14m7 0h2M13 24h14m7 0h2M13 37h14m7 0h2"/>${label()}`,
+  'Racks & Integration':()=>`<rect class="stack" x="10" y="4" width="28" height="40" rx="3"/><path class="fine" d="M14 9h20v8H14zm0 11h20v8H14zm0 11h20v8H14z"/>${nodes([-155,-25,25,155],21)}${label()}`,
+  'Power Equipment':()=>`<path class="gear" d="M24 4l4 4 6-1 2 6 6 2-1 6 4 4-4 4 1 6-6 2-2 6-6-1-4 4-4-4-6 1-2-6-6-2 1-6-4-4 4-4-1-6 6-2 2-6 6 1Z"/><path class="beam" d="M27 9 17 25h8l-4 14 12-18h-8z"/>${label()}`,
+  'Cooling':()=>`<circle class="disc" cx="24" cy="24" r="19"/><path class="facet" d="M24 24c-1-10 4-16 12-16 1 8-3 14-12 16Zm0 0c10-1 16 4 16 12-8 1-14-3-16-12Zm0 0c1 10-4 16-12 16-1-8 3-14 12-16Zm0 0c-10 1-16-4-16-12 8-1 14 3 16 12Z"/>${label()}`,
+  'Backup Power':()=>`<rect class="stack" x="7" y="12" width="34" height="24" rx="5"/><path class="fine" d="M41 20h3v8h-3M12 18h11v12H12z"/><path class="beam" d="M28 16 22 25h5l-3 8 9-12h-5z"/>${label()}`,
+  'Grid & Utilities':()=>`<path class="fine" d="M24 4 10 43M24 4l14 39M15 18h18M12 28h24M8 43h32"/>${nodes([-90,-30,30,90,150,210],20)}<path class="orbit" d="M5 35c10-6 28-6 38 0"/>${label()}`,
+  'Nuclear Power':()=>`<circle class="disc" cx="24" cy="24" r="3"/><ellipse class="orbit" cx="24" cy="24" rx="20" ry="8"/><ellipse class="orbit alt" cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse class="orbit" cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/>${nodes([-90,30,150],20)}${label()}`,
+  'Data Centers':()=>`<path class="stack" d="M7 7h14v34H7zm20 0h14v34H27z"/><path class="fine" d="M10 12h8M10 18h8M10 24h8M10 30h8M10 36h8M30 12h8M30 18h8M30 24h8M30 30h8M30 36h8"/>${label()}`,
+  'Hyperscalers':()=>`<path class="network" d="M8 30c-4-8 4-15 11-13 2-9 16-10 19-1 9-1 11 13 2 16H12c-2 0-3-1-4-2Z"/><path class="fine" d="M15 27h18M18 22h12"/>${nodes([-110,-35,35,110],20)}${label()}`,
+  'Cloud Platforms':()=>`<path class="network" d="M7 31c-4-9 5-17 13-13 4-10 18-8 19 2 9 1 8 14-1 15H12c-2 0-4-2-5-4Z"/><path class="fine" d="M16 29h16M19 24h10"/>${label()}`,
+  'Foundation Models':()=>`<path class="network" d="M24 5 39 14v20L24 43 9 34V14Z"/><path class="fine" d="M15 18l9-5 9 5v12l-9 5-9-5zM9 14l15 9 15-9M24 23v20"/>${nodes([-90,-30,30,90,150,210],20)}${label('hex')}`,
+  'AI Infrastructure':()=>`<path class="chip" d="M10 10h28v28H10z"/>${pinRing()}<path class="network" d="M16 30c3-10 5-15 8-15s6 5 8 15M18 25h12"/>${nodes([-135,-45,45,135],20)}${label()}`,
+  'Enterprise Software':()=>`<rect class="network" x="6" y="8" width="36" height="32" rx="5"/><path class="fine" d="M6 16h36M12 12h2m4 0h2m4 0h2M13 23h9v9h13"/>${label('hex')}`,
+  'Cybersecurity':()=>`<path class="facet" d="M24 4 39 10v13c0 10-6 17-15 21C15 40 9 33 9 23V10Z"/><path class="fine" d="M19 23v-4a5 5 0 0 1 10 0v4m-12 0h14v10H17z"/>${label()}`,
+  'Robotics':()=>`<path class="arm" d="M7 38h14v6H7zm8-3 7-10 7 4-5 9m5-9 5-12 7 3-4 13M34 17l-4-8 5-5 7 4-1 12"/><circle class="fine" cx="22" cy="25" r="3"/><circle class="fine" cx="34" cy="17" r="3"/>${label()}`,
+  'AI Applications':()=>`<path class="network" d="M24 4 39 12 43 27 33 41 16 43 5 31 8 14Z"/><path class="fine" d="M8 14l16 10 15-12M5 31l19-7 9 17M16 43l8-19 19 3"/>${nodes([-90,-40,10,60,110,160,210],20)}${label()}`,
+  'End Users':()=>`<circle class="disc" cx="17" cy="16" r="6"/><circle class="disc" cx="33" cy="17" r="5"/><path class="fine" d="M7 39c1-10 7-15 15-15s14 5 15 15M25 39c1-8 5-12 11-12 4 0 7 2 9 6"/>${nodes([-90,0,90,180],20)}${label()}`
+ };
+ const art=(designs[name]||designs['AI Applications'])();
+ return `<svg viewBox="0 0 48 48" style="${style}" role="img" aria-label="${esc(name)} sector emblem"><defs><linearGradient id="g${index}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--symbol-accent)"/><stop offset="1" stop-color="var(--symbol-accent-2)"/></linearGradient><filter id="glow${index}"><feGaussianBlur stdDeviation="1.05" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#glow${index})">${art}</g></svg>`;
 }
 document.querySelectorAll('.sector-card').forEach((card,i)=>{const holder=card.querySelector('.sector-symbol');if(holder)holder.innerHTML=sectorIcon(i+1,card.dataset.sector)});
 function companyDescription(name,p,secs){

@@ -1,0 +1,21 @@
+AI-DNA VERSION 3.3.2 — COMPREHENSIVE VISUAL CORRECTION
+
+This package supersedes Versions 3.3 and 3.3.1.
+
+Implemented:
+- Forty distinct, sector-specific SVG emblems generated in the browser.
+- Unique visual motifs for minerals, gases, wafers, lithography, fabs, memory,
+  networking, servers, cooling, power, nuclear, cloud, models, cybersecurity,
+  robotics, applications, and end users.
+- Six-column professional desktop layout with taller cards and clearer titles.
+- Full company display names with clean two-line wrapping while preserving the
+  original internal company keys, Yahoo Finance flow, and popup behavior.
+- Cache-busting updated to Version 3.3.2.
+- No API keys or environment variables included.
+
+UPLOAD INSTRUCTIONS
+Upload every file and folder in this ZIP to the ROOT of the GitHub repository,
+replacing matching files. Do not upload a containing version folder.
+
+Suggested commit message:
+AI-DNA Version 3.3.2 comprehensive visual correction
