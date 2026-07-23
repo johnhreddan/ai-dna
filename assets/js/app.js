@@ -147,12 +147,12 @@ async function loadYahooData(name,p){
   set('mOperatingMargin',fmtPercent(d.operatingMargin));set('mFCF',fmtCompactCurrency(d.freeCashFlow,d.currency));
   set('m52Week',fmtRange(d.fiftyTwoWeekLow,d.fiftyTwoWeekHigh,d.currency));set('mBeta',fmtNumber(d.beta,2));
   set('mFive',fmtPercent(d.fiveYear));set('mCagr',fmtPercent(d.cagr));
-  const status=document.getElementById('liveStatus');status.className='live-status ok';status.innerHTML=`<span><i class="pulse"></i>Yahoo Finance connected</span><span>${esc(d.exchange||'')}${d.delayedBy?` · delayed ${d.delayedBy} min`:''}</span>`;
+  const status=document.getElementById('liveStatus');status.className='live-status ok';status.innerHTML=`<span><i class="pulse"></i>Yahoo + fundamentals connected</span><span>${esc(d.exchange||'')}${d.delayedBy?` · delayed ${d.delayedBy} min`:''}</span>`;
   const missingCount=Array.isArray(d.missing)?d.missing.length:0;
-  note.className='market-note';note.textContent=`Latest available Yahoo Finance data for ${symbol}.${missingCount?` ${missingCount} unavailable field${missingCount===1?'':'s'} shown as N/A.`:''}`;
+  note.className='market-note';note.textContent=`${d.sources?.fundamentals?'Yahoo Finance prices and Alpha Vantage fundamentals':'Yahoo Finance prices only'} for ${symbol}.${!d.fundamentalsConfigured?' Add the Alpha Vantage key in Vercel to activate financial fundamentals.':''}${d.fundamentalsError&&d.fundamentalsConfigured?` Fundamentals warning: ${d.fundamentalsError}`:''}${missingCount?` ${missingCount} unavailable field${missingCount===1?'':'s'} shown as N/A.`:''}`;
  }catch(err){
   if(request.signal.aborted||activeMarketRequest!==request)return;
-  const status=document.getElementById('liveStatus');status.className='live-status error';status.innerHTML='<span><i class="pulse"></i>Yahoo data unavailable</span><span>Use Retry</span>';
+  const status=document.getElementById('liveStatus');status.className='live-status error';status.innerHTML='<span><i class="pulse"></i>Market data unavailable</span><span>Use Retry</span>';
   note.className='market-note error';note.innerHTML=`${esc(err.message||'Yahoo Finance request failed.')} <button class="inline-retry" id="retryMarket" type="button">Retry</button>`;
   document.querySelectorAll('.market-metric.loading').forEach(x=>x.classList.remove('loading'));
   document.getElementById('retryMarket')?.addEventListener('click',()=>loadYahooData(name,p),{once:true});
@@ -167,7 +167,7 @@ function openCompany(name){
  const relSummary=rels.length?rels.slice(0,3).map(r=>`<div>${esc(r.source)} <strong>→</strong> ${esc(r.target)} <span class="muted">· ${esc(r.type)}</span></div>`).join(''):'<span class="muted">No curated relationship yet.</span>';
  title.textContent='Company Intelligence';
  body.innerHTML=`<div class="company-hero"><div class="brand-mark" style="background:#2d6cdf">${esc(name.split(/\s+/).map(x=>x[0]).join('').slice(0,2))}</div><div><div class="company-name">${esc(name)}</div><div class="company-meta">${esc(p.ticker||'—')} · ${secs.map(s=>esc(s.name)).join(' · ')}</div></div><div class="score-ring" style="--score:${score}"><b>${score}</b><span class="score-caption">Importance</span></div></div>
- <div class="live-status" id="liveStatus"><span><i class="pulse"></i>Connecting to Yahoo Finance</span><span>${esc(p.ticker||'')}</span></div>
+ <div class="live-status" id="liveStatus"><span><i class="pulse"></i>Connecting to market data</span><span>${esc(p.ticker||'')}</span></div>
  <div class="quote-strip"><div class="quote-main"><div><div class="quote-price" id="livePrice">Loading…</div><div class="quote-change flat" id="liveChange">latest market quote</div></div><div class="company-meta">LIVE MARKET DATA</div></div><div class="spark-wrap" id="liveSpark"><span class="small-note">Loading 5-day chart…</span></div></div>
  <div class="market-section"><div class="market-section-title">Market and valuation</div><div class="compact-market">
   <div class="market-metric loading"><b id="mPrice">—</b><span>Stock price</span></div>
