@@ -86,9 +86,12 @@ function updatesFor(target){return APP_DATA.updates.filter(u=>u.target===target)
 function updateHtml(u){return `<div class="update-item"><strong>${u.id}. ${esc(u.headline)}</strong><div>${esc(u.detail)}</div><div class="small-note">${esc(u.source)} · ${toneLabel(u.tone)}</div></div>`}
 function openSector(name){const s=sectorByName(name),ups=updatesFor(name);title.textContent=name;body.innerHTML=`<div class="metric-row"><div class="metric"><b>${s.companies.length}</b><span>public leaders</span></div><div class="metric"><b>${toneLabel(s.status)}</b><span>sector signal</span></div><div class="metric"><b>${s.updates}</b><span>update badges</span></div><div class="metric"><b>${Math.round(s.companies.reduce((a,n)=>a+profile(n).aiExposure,0)/s.companies.length)}</b><span>illustrative AI exposure</span></div></div><div class="modal-grid"><div class="panel"><h3>Sector role</h3><p>${esc(name)} is one link in the physical and commercial chain that converts materials, equipment, power, compute, models and software into usable AI.</p></div><div class="panel"><h3>Public leaders</h3><p>${s.companies.map(esc).join(' · ')}</p></div><div class="panel"><h3>Intelligence</h3><div class="update-list">${ups.length?ups.map(updateHtml).join(''):'<span class="small-note">No embedded material update for this sector.</span>'}</div></div><div class="panel"><h3>Actions</h3><p><button class="action-btn primary" id="focusSector">Focus sector</button> <button class="action-btn" id="showUpstream">Show neighbors</button></p></div></div>`;modal.showModal();document.getElementById('focusSector').onclick=()=>{cards.forEach(c=>c.classList.add(c.dataset.sector===name?'focused':'dimmed'));modal.close()};document.getElementById('showUpstream').onclick=()=>{const idx=s.id;cards.forEach(c=>{const n=Number(c.dataset.index);c.classList.add(Math.abs(n-idx)<=1?'focused':'dimmed')});modal.close()}}
 
-function fmtNumber(v, digits=2){return Number.isFinite(Number(v))?Number(v).toLocaleString(undefined,{minimumFractionDigits:digits,maximumFractionDigits:digits}):'—'}
-function fmtPercent(v){return Number.isFinite(Number(v))?`${Number(v)>=0?'+':''}${fmtNumber(v,1)}%`:'—'}
-function fmtCurrency(v,currency='USD'){if(!Number.isFinite(Number(v)))return '—';try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency||'USD',maximumFractionDigits:Number(v)>=100?2:3}).format(v)}catch{return `${fmtNumber(v,2)} ${currency||''}`.trim()}}
+function hasNumber(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))}
+function fmtNumber(v,digits=2){return hasNumber(v)?Number(v).toLocaleString(undefined,{minimumFractionDigits:digits,maximumFractionDigits:digits}):'N/A'}
+function fmtPercent(v){return hasNumber(v)?`${Number(v)>=0?'+':''}${fmtNumber(v,1)}%`:'N/A'}
+function fmtCurrency(v,currency='USD'){if(!hasNumber(v))return 'N/A';try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency||'USD',maximumFractionDigits:Number(v)>=100?2:3}).format(Number(v))}catch{return `${fmtNumber(v,2)} ${currency||''}`.trim()}}
+function fmtCompactCurrency(v,currency='USD'){if(!hasNumber(v))return 'N/A';const n=Number(v);try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency||'USD',notation:'compact',maximumFractionDigits:1}).format(n)}catch{return fmtNumber(n,0)}}
+function fmtRange(low,high,currency='USD'){return hasNumber(low)&&hasNumber(high)?`${fmtCurrency(low,currency)} - ${fmtCurrency(high,currency)}`:'N/A'}
 function sparkSvg(points){const vals=(points||[]).filter(Number.isFinite);if(vals.length<2)return '<span class="small-note">Chart unavailable</span>';const w=150,h=50,p=3,min=Math.min(...vals),max=Math.max(...vals),span=max-min||1;const xy=vals.map((v,i)=>[p+i*(w-2*p)/(vals.length-1),h-p-(v-min)*(h-2*p)/span]);const line=xy.map((a,i)=>`${i?'L':'M'}${a[0].toFixed(1)},${a[1].toFixed(1)}`).join(' ');const area=`${line} L${(w-p).toFixed(1)},${(h-p).toFixed(1)} L${p},${h-p} Z`;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="Five-day price chart"><path class="spark-area" d="${area}"></path><path class="spark-line" d="${line}"></path></svg>`}
 let activeMarketRequest = null;
 const marketCache = new Map();
@@ -135,9 +138,18 @@ async function loadYahooData(name,p){
   document.getElementById('livePrice').textContent=fmtCurrency(d.price,d.currency);
   const ch=document.getElementById('liveChange');ch.textContent=`${fmtPercent(d.changePercent)} today`;ch.className=`quote-change ${d.changePercent>0?'up':d.changePercent<0?'down':'flat'}`;
   document.getElementById('liveSpark').innerHTML=sparkSvg(d.spark);
-  set('mPrice',fmtCurrency(d.price,d.currency));set('mPE',fmtNumber(d.pe,1));set('mROE',fmtPercent(d.roe));set('mEPS',fmtCurrency(d.eps,d.currency));set('mDE',fmtNumber(d.de,2));set('mFive',fmtPercent(d.fiveYear));set('mCagr',fmtPercent(d.cagr));
+  set('mPrice',fmtCurrency(d.price,d.currency));
+  set('mMarketCap',fmtCompactCurrency(d.marketCap,d.currency));
+  set('mTrailingPE',fmtNumber(d.trailingPe,1));set('mForwardPE',fmtNumber(d.forwardPe,1));
+  set('mTrailingEPS',fmtCurrency(d.trailingEps,d.currency));set('mForwardEPS',fmtCurrency(d.forwardEps,d.currency));
+  set('mROE',fmtPercent(d.roe));set('mDE',fmtNumber(d.debtToEquity,2));
+  set('mRevenueGrowth',fmtPercent(d.revenueGrowth));set('mEarningsGrowth',fmtPercent(d.earningsGrowth));
+  set('mOperatingMargin',fmtPercent(d.operatingMargin));set('mFCF',fmtCompactCurrency(d.freeCashFlow,d.currency));
+  set('m52Week',fmtRange(d.fiftyTwoWeekLow,d.fiftyTwoWeekHigh,d.currency));set('mBeta',fmtNumber(d.beta,2));
+  set('mFive',fmtPercent(d.fiveYear));set('mCagr',fmtPercent(d.cagr));
   const status=document.getElementById('liveStatus');status.className='live-status ok';status.innerHTML=`<span><i class="pulse"></i>Yahoo Finance connected</span><span>${esc(d.exchange||'')}${d.delayedBy?` · delayed ${d.delayedBy} min`:''}</span>`;
-  note.className='market-note';note.textContent=`Latest available Yahoo Finance data for ${symbol}.${d.partial?' Some ratios are not supplied for this exchange.':''}`;
+  const missingCount=Array.isArray(d.missing)?d.missing.length:0;
+  note.className='market-note';note.textContent=`Latest available Yahoo Finance data for ${symbol}.${missingCount?` ${missingCount} unavailable field${missingCount===1?'':'s'} shown as N/A.`:''}`;
  }catch(err){
   if(request.signal.aborted||activeMarketRequest!==request)return;
   const status=document.getElementById('liveStatus');status.className='live-status error';status.innerHTML='<span><i class="pulse"></i>Yahoo data unavailable</span><span>Use Retry</span>';
@@ -157,16 +169,27 @@ function openCompany(name){
  body.innerHTML=`<div class="company-hero"><div class="brand-mark" style="background:#2d6cdf">${esc(name.split(/\s+/).map(x=>x[0]).join('').slice(0,2))}</div><div><div class="company-name">${esc(name)}</div><div class="company-meta">${esc(p.ticker||'—')} · ${secs.map(s=>esc(s.name)).join(' · ')}</div></div><div class="score-ring" style="--score:${score}"><b>${score}</b><span class="score-caption">Importance</span></div></div>
  <div class="live-status" id="liveStatus"><span><i class="pulse"></i>Connecting to Yahoo Finance</span><span>${esc(p.ticker||'')}</span></div>
  <div class="quote-strip"><div class="quote-main"><div><div class="quote-price" id="livePrice">Loading…</div><div class="quote-change flat" id="liveChange">latest market quote</div></div><div class="company-meta">LIVE MARKET DATA</div></div><div class="spark-wrap" id="liveSpark"><span class="small-note">Loading 5-day chart…</span></div></div>
- <div class="compact-market">
+ <div class="market-section"><div class="market-section-title">Market and valuation</div><div class="compact-market">
   <div class="market-metric loading"><b id="mPrice">—</b><span>Stock price</span></div>
-  <div class="market-metric loading"><b id="mPE">—</b><span>P/E</span></div>
-  <div class="market-metric loading"><b id="mROE">—</b><span>ROE</span></div>
-  <div class="market-metric loading"><b id="mEPS">—</b><span>EPS</span></div>
+  <div class="market-metric loading"><b id="mMarketCap">—</b><span>Market cap</span></div>
+  <div class="market-metric loading"><b id="mTrailingPE">—</b><span>Trailing P/E</span></div>
+  <div class="market-metric loading"><b id="mForwardPE">—</b><span>Forward P/E</span></div>
+  <div class="market-metric loading"><b id="mTrailingEPS">—</b><span>Trailing EPS</span></div>
+  <div class="market-metric loading"><b id="mForwardEPS">—</b><span>Forward EPS</span></div>
+  <div class="market-metric loading"><b id="m52Week">—</b><span>52-week range</span></div>
+  <div class="market-metric loading"><b id="mBeta">—</b><span>Beta</span></div>
+ </div></div>
+ <div class="market-section"><div class="market-section-title">Growth and financial quality</div><div class="compact-market">
+  <div class="market-metric loading"><b id="mRevenueGrowth">—</b><span>Revenue growth</span></div>
+  <div class="market-metric loading"><b id="mEarningsGrowth">—</b><span>Earnings growth</span></div>
+  <div class="market-metric loading"><b id="mOperatingMargin">—</b><span>Operating margin</span></div>
+  <div class="market-metric loading"><b id="mROE">—</b><span>Return on equity</span></div>
   <div class="market-metric loading"><b id="mDE">—</b><span>Debt / equity</span></div>
+  <div class="market-metric loading"><b id="mFCF">—</b><span>Free cash flow</span></div>
   <div class="market-metric loading"><b id="mFive">—</b><span>5-year return</span></div>
   <div class="market-metric loading"><b id="mCagr">—</b><span>5-year CAGR</span></div>
-  <div class="market-metric"><b>${score}/100</b><span>AI-DNA score</span></div>
- </div><div class="market-note" id="liveDataNote">Requesting the latest available quote and fundamentals.</div>
+ </div></div>
+ <div class="market-note" id="liveDataNote">Requesting the latest available quote and fundamentals. Missing values will display as N/A, never zero.</div>
  <div class="company-story"><div class="panel"><h3>What the company does</h3><p>${esc(description)}</p></div><div class="panel why-box"><h3>Why it matters</h3><p>${esc(why)}</p></div></div>
  <div class="compact-lower"><div class="panel"><h3>AI-DNA assessment</h3><div class="mini-lines"><div class="mini-line"><span>Importance</span><span>${score}/100</span></div><div class="mini-line"><span>Rating</span><span>${esc(p.rating||'Not rated')}</span></div><div class="mini-line"><span>AI exposure</span><span>${esc(p.aiExposure??'—')}</span></div><div class="mini-line"><span>Risk</span><span>${esc(p.risk??'—')}</span></div></div></div><div class="panel"><h3>Key relationships</h3><div class="relationship-compact">${relSummary}</div>${ups.length?`<div class="small-note" style="margin-top:6px">${ups.length} embedded update${ups.length>1?'s':''}</div>`:''}</div></div>
  <div class="company-actions"><button class="action-btn primary" id="mapCompany">Map connections</button><button class="action-btn" id="addCompanyCompare">Add to Compare</button></div>`;

@@ -64,3 +64,4 @@ dialog#modal .modal-body{padding:12px 13px 14px;max-height:calc(90vh - 48px);ove
 @media(max-width:620px){.quote-strip{grid-template-columns:1fr}.spark-wrap{display:none}}
 
 .inline-retry{margin-left:8px;border:1px solid var(--red);background:transparent;color:#ffdbe1;border-radius:6px;padding:2px 7px;cursor:pointer}.inline-retry:hover{background:rgba(255,97,120,.14)}
+.market-section{margin:10px 0 0}.market-section-title{font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);padding:0 2px 2px}.market-section .compact-market{margin-top:5px}.market-section .market-metric b{font-variant-numeric:tabular-nums}.market-section .market-metric span{line-height:1.25}.market-note{line-height:1.4}
