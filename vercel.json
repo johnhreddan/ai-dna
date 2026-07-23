@@ -1,0 +1,15 @@
+{
+  "functions": {
+    "api/yahoo.js": {
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/yahoo",
+      "headers": [
+        { "key": "Cache-Control", "value": "s-maxage=900, stale-while-revalidate=86400" }
+      ]
+    }
+  ]
+}

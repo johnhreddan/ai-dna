@@ -159,14 +159,14 @@ function sparkSvg(points){const vals=(points||[]).filter(Number.isFinite);if(val
 async function loadYahooData(name,p){
  const symbol=(p.ticker||'').trim();const note=document.getElementById('liveDataNote');if(!symbol||symbol==='—'){note.className='market-note error';note.textContent='No public ticker is assigned to this company.';return}
  try{
-  const response=await fetch(`/api/yahoo?symbol=${encodeURIComponent(symbol)}`);const d=await response.json();if(!response.ok)throw new Error(d.error||'Data unavailable');
+  const response=await fetch(`/api/yahoo?symbol=${encodeURIComponent(symbol)}`,{headers:{accept:'application/json'}});const raw=await response.text();let d;try{d=JSON.parse(raw)}catch{throw new Error(response.ok?'Market data returned an unreadable response.':'The market-data service is temporarily unavailable.')}if(!response.ok)throw new Error(d.error||'Data unavailable');
   const set=(id,val)=>{const el=document.getElementById(id);if(el){el.textContent=val;el.closest('.market-metric')?.classList.remove('loading')}};
   document.getElementById('livePrice').textContent=fmtCurrency(d.price,d.currency);
   const ch=document.getElementById('liveChange');ch.textContent=`${fmtPercent(d.changePercent)} today`;ch.className=`quote-change ${d.changePercent>0?'up':d.changePercent<0?'down':'flat'}`;
   document.getElementById('liveSpark').innerHTML=sparkSvg(d.spark);
   set('mPrice',fmtCurrency(d.price,d.currency));set('mPE',fmtNumber(d.pe,1));set('mROE',fmtPercent(d.roe));set('mEPS',fmtCurrency(d.eps,d.currency));set('mDE',fmtNumber(d.de,2));set('mFive',fmtPercent(d.fiveYear));set('mCagr',fmtPercent(d.cagr));
   const status=document.getElementById('liveStatus');status.className='live-status ok';status.innerHTML=`<span><i class="pulse"></i>Yahoo Finance connected</span><span>${d.exchange||''}${d.delayedBy?` · delayed ${d.delayedBy} min`:''}</span>`;
-  note.textContent=`Latest available Yahoo Finance data for ${symbol}. Some fundamentals may be unavailable for certain exchanges.`;
+  note.className='market-note';note.textContent=`Latest available Yahoo Finance data for ${symbol}.${d.partial?' Some ratios are not supplied for this exchange.':''}`;
  }catch(err){const status=document.getElementById('liveStatus');status.className='live-status error';status.innerHTML='<span><i class="pulse"></i>Yahoo data unavailable</span><span>Try again later</span>';note.className='market-note error';note.textContent=err.message||'Yahoo Finance request failed.';document.querySelectorAll('.market-metric.loading').forEach(x=>x.classList.remove('loading'))}
 }
 
