@@ -48,14 +48,32 @@ const sectorPurpose={
 };
 function sectorIcon(index,name){
  const initials=name.split(/\s+/).filter(x=>x!=='&').map(x=>x[0]).join('').slice(0,2).toUpperCase();
- const hue=(index*47)%360, accent=(hue+72)%360, variant=index%5;
- const teeth=Array.from({length:6+(index%5)},(_,i)=>{const a=(i/(6+(index%5)))*Math.PI*2, r=14+(i%2)*2;return `<circle class="node" cx="${20+Math.cos(a)*r}" cy="${20+Math.sin(a)*r}" r="${1.6+(index%3)*.25}"/>`}).join('');
- const path=variant===0?'<path class="orbit" d="M5 20c5-15 25-15 30 0s-25 15-30 0"/>':
- variant===1?'<path class="orbit" d="M7 9c9-7 23-2 25 9 2 12-11 19-21 13"/>':
- variant===2?'<path class="orbit" d="M5 28Q20 3 35 28M8 12Q20 32 32 12"/>':
- variant===3?'<path class="orbit" d="M20 3v34M3 20h34M8 8l24 24M32 8L8 32"/>':
- '<path class="orbit" d="M6 20c0-8 6-14 14-14s14 6 14 14-6 14-14 14S6 28 6 20zm5 0c0 5 4 9 9 9s9-4 9-9-4-9-9-9-9 4-9 9z"/>';
- return `<svg viewBox="0 0 40 40" style="--symbol-core:hsl(${hue} 72% 55%);--symbol-accent:hsl(${accent} 80% 65%)">${path}${teeth}<circle class="core" cx="20" cy="20" r="${7+(index%3)}"/><text x="20" y="20">${initials}</text></svg>`;
+ const hue=(index*43+18)%360, accent=(hue+78)%360, accent2=(hue+156)%360;
+ const style=`--symbol-core:hsl(${hue} 76% 56%);--symbol-accent:hsl(${accent} 88% 66%);--symbol-accent-2:hsl(${accent2} 84% 64%)`;
+ const label=`<circle class="icon-core" cx="24" cy="24" r="7.2"/><circle class="icon-core-ring" cx="24" cy="24" r="9.4"/><text x="24" y="24">${initials}</text>`;
+ const nodes=(count=8,r=18)=>Array.from({length:count},(_,i)=>{const a=(i/count)*Math.PI*2-Math.PI/2;return `<circle class="node" cx="${(24+Math.cos(a)*r).toFixed(2)}" cy="${(24+Math.sin(a)*r).toFixed(2)}" r="1.65"/>`}).join('');
+ let art='';
+ const n=name.toLowerCase();
+ if(/mineral|metal|material|chemical|resist/.test(n)){
+  art=`<path class="facet" d="M24 3 39 12 42 29 31 43 14 42 5 28 9 11Z"/><path class="fine" d="M9 11 24 24 39 12M5 28l19-4 7 19M14 42l10-18 18 5"/>${nodes(7,20)}`;
+ }else if(/gas|cooling|power|grid|nuclear|utilities/.test(n)){
+  art=`<path class="orbit" d="M5 24c4-13 15-19 25-15 12 4 17 17 11 27-6 10-20 12-29 4"/><path class="orbit alt" d="M9 12c11 4 20 14 27 29M8 37c8-13 18-22 31-28"/>${nodes(9,19)}`;
+ }else if(/wafer|mask|lithography|optical/.test(n)){
+  art=`<circle class="disc" cx="24" cy="24" r="19"/><circle class="fine" cx="24" cy="24" r="14"/><path class="beam" d="M4 29 44 13M7 35 41 20M13 43 39 29"/><circle class="lens" cx="24" cy="24" r="11"/>`;
+ }else if(/deposition|etch|metrology|foundr|packaging/.test(n)){
+  art=`<path class="chip" d="M10 10h28v28H10z"/><path class="fine" d="M15 15h18v18H15zM5 15h5M5 24h5M5 33h5M38 15h5M38 24h5M38 33h5M15 5v5M24 5v5M33 5v5M15 38v5M24 38v5M33 38v5"/>${nodes(4,19)}`;
+ }else if(/software|cloud|model|application|cyber/.test(n)){
+  art=`<path class="network" d="M7 18 16 8l11 5 11-7 5 13-8 10 4 11-15 3-12-7-7-11Z"/><path class="fine" d="M7 18l17 6L16 8m8 16 14-18m-14 18 15 16M24 24 12 36"/>${nodes(6,19)}`;
+ }else if(/memory|storage|server|data center|infrastructure/.test(n)){
+  art=`<ellipse class="stack" cx="24" cy="11" rx="15" ry="5"/><path class="stack" d="M9 11v23c0 3 7 6 15 6s15-3 15-6V11M9 20c0 3 7 6 15 6s15-3 15-6M9 28c0 3 7 6 15 6s15-3 15-6"/><path class="fine" d="M14 14h20M14 23h20M14 32h20"/>`;
+ }else if(/network|switch|rack/.test(n)){
+  art=`<path class="hex" d="M24 3 42 13v22L24 45 6 35V13Z"/><path class="fine" d="M24 3v42M6 13l36 22M42 13 6 35"/>${nodes(6,20)}`;
+ }else if(/robot|end user/.test(n)){
+  art=`<path class="arm" d="M8 37h13v6H8zm7-3 7-10 7 4-5 9m5-9 5-12 7 3-4 13M34 16l-4-7 5-5 7 4-1 11"/>${nodes(5,20)}`;
+ }else{
+  art=`<path class="gear" d="M24 4l4 4 6-1 2 6 6 2-1 6 4 4-4 4 1 6-6 2-2 6-6-1-4 4-4-4-6 1-2-6-6-2 1-6-4-4 4-4-1-6 6-2 2-6 6 1Z"/><circle class="fine" cx="24" cy="24" r="15"/>`;
+ }
+ return `<svg viewBox="0 0 48 48" style="${style}" role="img" aria-label="${esc(name)} sector emblem"><defs><linearGradient id="g${index}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--symbol-accent)"/><stop offset="1" stop-color="var(--symbol-accent-2)"/></linearGradient><filter id="glow${index}"><feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#glow${index})">${art}${label}</g></svg>`;
 }
 document.querySelectorAll('.sector-card').forEach((card,i)=>{const holder=card.querySelector('.sector-symbol');if(holder)holder.innerHTML=sectorIcon(i+1,card.dataset.sector)});
 function companyDescription(name,p,secs){

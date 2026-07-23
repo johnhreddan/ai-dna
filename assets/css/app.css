@@ -65,3 +65,67 @@ dialog#modal .modal-body{padding:12px 13px 14px;max-height:calc(90vh - 48px);ove
 
 .inline-retry{margin-left:8px;border:1px solid var(--red);background:transparent;color:#ffdbe1;border-radius:6px;padding:2px 7px;cursor:pointer}.inline-retry:hover{background:rgba(255,97,120,.14)}
 .market-section{margin:10px 0 0}.market-section-title{font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);padding:0 2px 2px}.market-section .compact-market{margin-top:5px}.market-section .market-metric b{font-variant-numeric:tabular-nums}.market-section .market-metric span{line-height:1.25}.market-note{line-height:1.4}
+
+/* =========================================================
+   AI-DNA Version 3.3 — Aesthetic Refinement
+   Presentation-only overrides. Live data flow remains intact.
+   ========================================================= */
+:root{--card-radius:13px;--chip-radius:7px;--card-edge:#315675;--card-edge-soft:rgba(116,170,211,.24)}
+body{background:radial-gradient(circle at 50% -18%,#173c61 0,#071827 43%,#040b13 100%)}
+.app{padding:10px 12px 11px;gap:8px}
+.grid{gap:7px}
+.sector-card{
+ border-color:var(--card-edge-soft);border-radius:var(--card-radius);padding:6px;
+ grid-template-rows:minmax(58px,46%) minmax(0,54%);
+ background:linear-gradient(155deg,rgba(18,45,72,.99),rgba(7,20,34,.99));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 5px 14px rgba(0,0,0,.14)
+}
+.sector-card:hover{border-color:#67b8e8;box-shadow:0 0 0 1px rgba(103,184,232,.24),0 9px 24px rgba(0,0,0,.28);transform:translateY(-2px)}
+.sector-head{justify-content:flex-start;padding:1px 3px 4px;gap:1px;overflow:visible}
+.sector-symbol{width:44px;height:44px;margin:0 auto -1px;flex:0 0 44px;filter:drop-shadow(0 5px 10px rgba(0,0,0,.5))}
+.sector-symbol svg{width:44px;height:44px;overflow:visible}
+.sector-name{
+ display:flex;align-items:center;justify-content:center;min-height:24px;max-width:100%;margin:0 auto;
+ font-size:clamp(10.5px,.78vw,14px);font-weight:850;line-height:1.03;letter-spacing:-.015em;
+ color:#fff;text-shadow:0 1px 2px #000;text-wrap:balance;white-space:normal;overflow:visible
+}
+.update{right:0;top:0;min-width:18px;height:18px;border:1px solid rgba(255,255,255,.62);box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.brands{gap:4px;grid-auto-rows:minmax(0,1fr)}
+.brand{
+ gap:5px;padding:3px 5px;border-radius:var(--chip-radius);border-color:rgba(16,31,45,.2);
+ background:linear-gradient(180deg,#fff,#f3f6f9);box-shadow:0 1px 2px rgba(0,0,0,.2);
+ align-items:center;overflow:visible
+}
+.brand:hover{outline-width:2px;transform:translateY(-1px);box-shadow:0 3px 7px rgba(0,0,0,.25)}
+.brand-mark{width:21px;height:21px;border-radius:5px;font-size:7.5px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25);flex:0 0 21px}
+.brand-name{
+ display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;overflow:hidden;text-overflow:ellipsis;
+ font-size:clamp(6.8px,.49vw,9px);font-weight:800;line-height:1.02;text-align:left;overflow-wrap:anywhere
+}
+.sector-symbol .icon-core{fill:var(--symbol-core);stroke:#f6ffff;stroke-width:1.05}
+.sector-symbol .icon-core-ring{fill:none;stroke:var(--symbol-accent);stroke-width:1.15;opacity:.92}
+.sector-symbol .node{fill:#ffd15b;stroke:#fff;stroke-width:.65}
+.sector-symbol .orbit,.sector-symbol .facet,.sector-symbol .disc,.sector-symbol .chip,.sector-symbol .network,.sector-symbol .stack,.sector-symbol .hex,.sector-symbol .arm,.sector-symbol .gear{fill:none;stroke:url(#unused);stroke:var(--symbol-accent);stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.sector-symbol .alt{stroke:var(--symbol-accent-2)}
+.sector-symbol .fine{fill:none;stroke:var(--symbol-accent-2);stroke-width:1;stroke-linecap:round;stroke-linejoin:round;opacity:.88}
+.sector-symbol .beam{fill:none;stroke:var(--symbol-accent);stroke-width:1.3;opacity:.8}
+.sector-symbol .lens{fill:rgba(255,255,255,.04);stroke:var(--symbol-accent-2);stroke-width:1.4}
+.sector-symbol text{fill:#06111e;font-size:7px;font-weight:950;paint-order:stroke;stroke:rgba(255,255,255,.22);stroke-width:.35}
+.sector-card.positive .sector-symbol,.sector-card.negative .sector-symbol,.sector-card.watch .sector-symbol{animation:none}
+
+/* Stronger Bloomberg-style company popup polish */
+dialog#modal{width:min(690px,94vw);border-color:rgba(92,189,221,.5);background:linear-gradient(145deg,#102a43 0%,#071421 72%);box-shadow:0 34px 110px rgba(0,0,0,.74),0 0 0 1px rgba(88,211,197,.1)}
+dialog#modal .modal-head{padding:11px 15px;border-bottom-color:rgba(115,170,210,.25)}
+dialog#modal .modal-body{padding:14px 15px 16px}.company-name{font-size:23px}.company-hero{padding-bottom:12px}.quote-main,.spark-wrap,.panel,.market-metric{border-color:rgba(94,145,184,.28)}
+.market-section-title{color:#6fd7df}.compact-market{gap:7px}.compact-market .market-metric{padding:8px}.company-story{gap:9px}.compact-lower{gap:9px}
+
+/* Full legal/display names where source data intentionally uses a short key */
+.brand[data-company="Tokyo Ohka"] .brand-name::after{content:" Kogyo"}
+.brand[data-company="Nippon Sanso"] .brand-name::after{content:" Holdings"}
+
+@media(max-width:1500px){
+ .app{padding:7px 9px}.grid{gap:5px}.sector-card{padding:5px;grid-template-rows:minmax(54px,45%) minmax(0,55%)}
+ .sector-symbol{width:40px;height:40px;flex-basis:40px}.sector-symbol svg{width:40px;height:40px}
+ .sector-name{font-size:clamp(9.5px,.78vw,12px);min-height:20px}.brand{padding:2px 4px;gap:4px}.brand-mark{width:19px;height:19px;flex-basis:19px}.brand-name{font-size:clamp(6.3px,.5vw,8px)}
+}
+@media(max-width:1200px){.brand-name{font-size:6.5px}.sector-name{font-size:9.5px}}
