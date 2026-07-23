@@ -349,3 +349,149 @@ body{background:radial-gradient(circle at 50% -12%,#173e64 0,#071827 40%,#030a12
   .brand-mark { width: 16px; height: 16px; }
   .brand-name { font-size: 6.2px; }
 }
+
+/* =========================================================
+   AI-DNA v3.3.4 — One-Screen Title Legibility Correction
+   Gives every sector title a dedicated, high-contrast band.
+   ========================================================= */
+@media (min-width: 901px) {
+  .sector-card {
+    grid-template-rows: 60px minmax(0,1fr);
+  }
+  .sector-head {
+    display: grid;
+    grid-template-rows: 31px 25px;
+    align-content: center;
+    justify-items: stretch;
+    gap: 2px;
+    padding: 1px 1px 2px;
+    overflow: hidden;
+  }
+  .sector-symbol {
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    align-self: center;
+  }
+  .sector-symbol svg {
+    width: 30px;
+    height: 30px;
+  }
+  .sector-name {
+    width: 100%;
+    min-height: 25px;
+    margin: 0;
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border-top: 1px solid rgba(111,215,223,.22);
+    border-bottom: 1px solid rgba(0,0,0,.55);
+    background: linear-gradient(180deg,rgba(7,23,39,.94),rgba(2,10,18,.92));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.035),0 1px 3px rgba(0,0,0,.5);
+    color: #ffffff;
+    font-size: clamp(10px,.67vw,12px);
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -.08px;
+    text-align: center;
+    text-shadow: 0 1px 2px #000;
+    white-space: normal;
+    overflow: hidden;
+    text-wrap: balance;
+  }
+  .brands { min-height: 0; }
+}
+
+@media (min-width: 901px) and (max-height: 820px) {
+  .sector-card { grid-template-rows: 56px minmax(0,1fr); }
+  .sector-head { grid-template-rows: 28px 24px; gap: 1px; }
+  .sector-symbol,.sector-symbol svg { width: 27px; height: 27px; }
+  .sector-name { min-height: 24px; font-size: 9.7px; padding: 2px 3px; }
+}
+
+/* =========================================================
+   AI-DNA v3.3.5 — Definitive one-screen sector-title fix
+   Titles occupy a separate solid ribbon and cannot overlap
+   either the emblem or the company grid.
+   ========================================================= */
+@media (min-width: 901px) {
+  .sector-card {
+    grid-template-rows: 66px minmax(0,1fr) !important;
+    padding: 4px !important;
+  }
+  .sector-head {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: 66px !important;
+    min-height: 66px !important;
+    padding: 0 0 28px !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 7px 7px 3px 3px !important;
+    background: transparent !important;
+  }
+  .sector-symbol {
+    position: absolute !important;
+    left: 50% !important;
+    top: 1px !important;
+    transform: translateX(-50%) !important;
+    width: 35px !important;
+    height: 35px !important;
+    margin: 0 !important;
+  }
+  .sector-symbol svg {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  .sector-name {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 4 !important;
+    width: 100% !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 2px 5px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(119,232,224,.78) !important;
+    border-radius: 5px !important;
+    background: linear-gradient(180deg,#37d9cf 0%,#19aeb4 100%) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.46) !important;
+    color: #03111d !important;
+    font-family: Segoe UI,Arial,sans-serif !important;
+    font-size: clamp(10.5px,.72vw,13px) !important;
+    font-weight: 900 !important;
+    line-height: .98 !important;
+    letter-spacing: -.14px !important;
+    text-align: center !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,.25) !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    text-wrap: balance !important;
+  }
+  .sector-card.positive .sector-name { background:linear-gradient(180deg,#52e6b0,#25bd85)!important;border-color:#7ff3c2!important; }
+  .sector-card.negative .sector-name { background:linear-gradient(180deg,#ff8193,#e95069)!important;border-color:#ff9eab!important; }
+  .sector-card.watch .sector-name { background:linear-gradient(180deg,#ffd46f,#e9a82f)!important;border-color:#ffe29a!important; }
+  .brands {
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 4px !important;
+  }
+  .update { z-index: 8 !important; right: 1px !important; top: 1px !important; }
+}
+
+@media (min-width: 901px) and (max-height: 820px) {
+  .sector-card { grid-template-rows: 61px minmax(0,1fr) !important; }
+  .sector-head { height:61px!important; min-height:61px!important; padding-bottom:26px!important; }
+  .sector-symbol,.sector-symbol svg { width:31px!important; height:31px!important; }
+  .sector-name { height:25px!important; min-height:25px!important; font-size:10.2px!important; }
+}
