@@ -2,6 +2,7 @@
 const APP_DATA = window.AI_DNA_DATA;
 const modal=document.getElementById('modal'),title=document.getElementById('modalTitle'),body=document.getElementById('modalBody');
 const swotDialog=document.getElementById('swotDialog'),swotTitleEl=document.getElementById('swotDialogTitle'),swotSubEl=document.getElementById('swotDialogSubhead'),swotBody=document.getElementById('swotDialogBody');
+const insightsDialog=document.getElementById('insightsDialog'),insightsTitle=document.getElementById('insightsDialogTitle'),insightsSub=document.getElementById('insightsDialogSubhead'),insightsBody=document.getElementById('insightsDialogBody');
 const cards=[...document.querySelectorAll('.sector-card')];
 const compare=[];
 let activeView='Industrial View';
@@ -228,6 +229,15 @@ async function loadYahooData(name,p){
 }
 
 
+
+function openSectorInsights(name){
+ const items=(APP_DATA.sectorInsights&&APP_DATA.sectorInsights[name])||[];
+ insightsTitle.textContent=`${name} Insights`;
+ insightsSub.textContent=`${items.length} sourced insight${items.length===1?'':'s'} · each summary is ten words`;
+ insightsBody.innerHTML=items.length?`<div class="insight-list">${items.map((x,i)=>`<article class="insight-item"><div class="insight-number">${i+1}</div><div class="insight-copy"><p>${esc(x.text)}</p><div class="insight-meta"><span>${esc(x.source)}${x.date?` · ${esc(x.date)}`:''}</span><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">View Source ↗</a></div></div></article>`).join('')}</div><p class="insight-disclaimer">Sourced strategic signals for orientation, not investment advice.</p>`:'<p class="small-note">No sourced insights are currently attached to this sector.</p>';
+ insightsDialog.showModal();
+}
+
 function swotFor(name){
  const entry=(APP_DATA.swot&&APP_DATA.swot[name])||null;
  if(entry)return entry;
@@ -287,9 +297,10 @@ function openCompare(){if(compare.length<2)return;const [a,b]=compare,pa=profile
 function openUpdates(){const d=document.getElementById('updatesDialog');document.getElementById('updatesDialogBody').innerHTML=`<div class="update-list">${APP_DATA.updates.map(updateHtml).join('')}</div><p class="small-note">These are embedded demonstration records. The structure is ready for verified headlines, URLs, dates and citations without changing the screen design.</p>`;d.showModal()}
 function openEditor(){const d=document.getElementById('editorDialog');document.getElementById('editorDialogBody').innerHTML=`<div class="editor-grid"><div><h3>Sector data</h3><textarea id="sectorEditor">${esc(JSON.stringify(APP_DATA.sectors,null,2))}</textarea></div><div><h3>Updates & signals</h3><textarea id="updateEditor">${esc(JSON.stringify({updates:APP_DATA.updates,signals:APP_DATA.signals},null,2))}</textarea></div></div><p class="small-note">Edits apply to the current browser session only. Use Export to save a JSON snapshot for the next build.</p><p><button class="action-btn primary" id="applyEdits">Apply Session Edits</button> <button class="action-btn" id="exportData">Export JSON</button></p>`;d.showModal();document.getElementById('applyEdits').onclick=()=>{try{APP_DATA.sectors=JSON.parse(document.getElementById('sectorEditor').value);const x=JSON.parse(document.getElementById('updateEditor').value);APP_DATA.updates=x.updates;APP_DATA.signals=x.signals;applyView(activeView);alert('Session data applied. Structural card changes require reopening the generated file.')}catch(e){alert('JSON error: '+e.message)}};document.getElementById('exportData').onclick=()=>{const blob=new Blob([JSON.stringify(APP_DATA,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ai-dna-data.json';a.click();URL.revokeObjectURL(a.href)}}
 
-document.querySelectorAll('.sector-head').forEach(btn=>btn.addEventListener('click',()=>openSector(btn.closest('.sector-card').dataset.sector)));
+document.querySelectorAll('.sector-head').forEach(btn=>btn.addEventListener('click',e=>{if(e.target.closest('.update'))return;openSector(btn.closest('.sector-card').dataset.sector)}));
+document.querySelectorAll('.update').forEach(badge=>{badge.setAttribute('role','button');badge.setAttribute('tabindex','0');const name=badge.closest('.sector-card').dataset.sector;badge.setAttribute('aria-label',`Open ${badge.textContent} sourced insights for ${name}`);const open=e=>{e.preventDefault();e.stopPropagation();openSectorInsights(name)};badge.addEventListener('click',open);badge.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){open(e)}})});
 document.querySelectorAll('.brand').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();if(e.shiftKey){addCompare(btn.dataset.company)}else openCompany(btn.dataset.company)}));
-document.getElementById('close').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});modal.addEventListener('close',()=>{if(activeMarketRequest){activeMarketRequest.abort();activeMarketRequest=null}});document.querySelectorAll('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());swotDialog?.addEventListener('click',e=>{if(e.target===swotDialog)swotDialog.close()});
+document.getElementById('close').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});modal.addEventListener('close',()=>{if(activeMarketRequest){activeMarketRequest.abort();activeMarketRequest=null}});document.querySelectorAll('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());swotDialog?.addEventListener('click',e=>{if(e.target===swotDialog)swotDialog.close()});insightsDialog?.addEventListener('click',e=>{if(e.target===insightsDialog)insightsDialog.close()});
 const search=document.getElementById('search');search.addEventListener('input',()=>{const q=search.value.toLowerCase().trim();cards.forEach(c=>{c.classList.toggle('dimmed',!!q&&!c.textContent.toLowerCase().includes(q));c.classList.toggle('focused',!!q&&c.textContent.toLowerCase().includes(q))})});
 document.getElementById('view').addEventListener('change',e=>applyView(e.target.value));
 document.getElementById('reset').onclick=()=>{search.value='';cards.forEach(c=>c.style.background='');applyView('Industrial View');document.getElementById('view').value='Industrial View'};
