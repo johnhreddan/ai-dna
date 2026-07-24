@@ -249,6 +249,7 @@ function openCompany(name){
  const relSummary=rels.length?rels.slice(0,3).map(r=>`<div>${esc(r.source)} <strong>→</strong> ${esc(r.target)} <span class="muted">· ${esc(r.type)}</span></div>`).join(''):'<span class="muted">No curated relationship yet.</span>';
  title.textContent='Company Intelligence';
  body.innerHTML=`<div class="company-hero"><div class="brand-mark" style="background:#2d6cdf">${esc(name.split(/\s+/).map(x=>x[0]).join('').slice(0,2))}</div><div><div class="company-name">${esc(name)}</div><div class="company-meta">${esc(p.ticker||'—')} · ${secs.map(s=>esc(s.name)).join(' · ')}</div></div><div class="score-ring" style="--score:${score}"><b>${score}</b><span class="score-caption">Importance</span></div></div>
+ <div class="company-actions company-actions-top"><button class="action-btn primary" id="openSwot">SWOT Analysis</button><button class="action-btn" id="mapCompany">Map Connections</button></div>
  <div class="live-status" id="liveStatus"><span><i class="pulse"></i>Connecting to market data</span><span>${esc(p.ticker||'')}</span></div>
  <div class="quote-strip"><div class="quote-main"><div><div class="quote-price" id="livePrice">Loading…</div><div class="quote-change flat" id="liveChange">latest market quote</div></div><div class="company-meta">LIVE MARKET DATA</div></div><div class="spark-wrap" id="liveSpark"><span class="small-note">Loading 5-day chart…</span></div></div>
  <div class="market-section"><div class="market-section-title">Market and valuation</div><div class="compact-market">
@@ -274,7 +275,7 @@ function openCompany(name){
  <div class="market-note" id="liveDataNote">Requesting the latest available quote and fundamentals. Missing values will display as N/A, never zero.</div>
  <div class="company-story"><div class="panel"><h3>What the company does</h3><p>${esc(description)}</p></div><div class="panel why-box"><h3>Why it matters</h3><p>${esc(why)}</p></div></div>
  <div class="compact-lower"><div class="panel"><h3>AI-DNA assessment</h3><div class="mini-lines"><div class="mini-line"><span>Importance</span><span>${score}/100</span></div><div class="mini-line"><span>Rating</span><span>${esc(p.rating||'Not rated')}</span></div><div class="mini-line"><span>AI exposure</span><span>${esc(p.aiExposure??'—')}</span></div><div class="mini-line"><span>Risk</span><span>${esc(p.risk??'—')}</span></div></div></div><div class="panel"><h3>Key relationships</h3><div class="relationship-compact">${relSummary}</div>${ups.length?`<div class="small-note" style="margin-top:6px">${ups.length} embedded update${ups.length>1?'s':''}</div>`:''}</div></div>
- <div class="company-actions"><button class="action-btn primary" id="openSwot">SWOT Analysis</button><button class="action-btn" id="mapCompany">Map Connections</button></div>`;
+`;
  modal.showModal();
  loadYahooData(name,p);
  document.getElementById('openSwot').onclick=()=>openSwot(name);

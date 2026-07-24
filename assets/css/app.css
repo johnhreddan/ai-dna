@@ -499,3 +499,9 @@ body{background:radial-gradient(circle at 50% -12%,#173e64 0,#071827 40%,#030a12
 
 /* AI-DNA v3.3.6 — SWOT modal integration */
 .swot-subhead{margin-top:4px;color:var(--muted);font-size:11px;line-height:1.35}.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.swot-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#0a1b2b;min-height:118px}.swot-card h3{margin:0 0 8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.swot-card p{margin:0;font-size:14px;line-height:1.45;color:#e4edf3}.swot-card.strength h3{color:var(--green)}.swot-card.weakness h3{color:var(--red)}.swot-card.opportunity h3{color:#58aee8}.swot-card.threat h3{color:var(--amber)}.swot-foot{display:flex;justify-content:space-between;gap:12px;border-top:1px solid rgba(255,255,255,.09);margin-top:12px;padding-top:10px;color:#8fa7bb;font-size:10px}#swotDialog{width:min(700px,94vw);border-color:rgba(247,189,74,.55);background:linear-gradient(145deg,#12283e,#07141f 72%);box-shadow:0 38px 120px rgba(0,0,0,.8),0 0 0 1px rgba(247,189,74,.12)}#swotDialog .modal-head{align-items:flex-start}#swotDialog .modal-head h2{font-size:22px}#swotDialog .close{align-self:flex-start}.company-actions{justify-content:flex-end;gap:7px;margin-top:10px}.company-actions .action-btn.primary{background:linear-gradient(180deg,#31d3bd,#18a995);border-color:#53eed8;color:#041812;font-weight:800}.company-actions .action-btn{padding:6px 9px;font-size:10.5px}@media(max-width:620px){.swot-grid{grid-template-columns:1fr}.swot-foot{flex-direction:column;align-items:flex-start}}
+
+
+/* AI-DNA v3.3.7 — keep company actions visible above market data */
+.company-actions-top{justify-content:flex-start;margin:8px 0 7px;padding:0;position:relative;z-index:3}
+.company-actions-top .action-btn{font-size:11px;padding:7px 11px}
+.company-actions-top .action-btn.primary{box-shadow:0 0 16px rgba(49,211,189,.18)}
