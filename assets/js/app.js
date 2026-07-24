@@ -230,11 +230,16 @@ async function loadYahooData(name,p){
 
 
 
+const INSIGHT_MAX_AGE_DAYS=Number(APP_DATA.insightPolicy?.maxAgeDays||30);
+function freshSectorInsights(name){
+ const now=new Date(),maxAge=INSIGHT_MAX_AGE_DAYS*86400000;
+ return ((APP_DATA.sectorInsights&&APP_DATA.sectorInsights[name])||[]).filter(x=>{const d=/^\d{4}-\d{2}-\d{2}$/.test(x.date||'')?new Date(`${x.date}T23:59:59Z`):null;return d&&!Number.isNaN(d.getTime())&&now-d>=0&&now-d<=maxAge}).sort((a,b)=>b.date.localeCompare(a.date));
+}
 function openSectorInsights(name){
- const items=(APP_DATA.sectorInsights&&APP_DATA.sectorInsights[name])||[];
+ const items=freshSectorInsights(name);
  insightsTitle.textContent=`${name} Insights`;
- insightsSub.textContent=`${items.length} sourced insight${items.length===1?'':'s'} · each summary is ten words`;
- insightsBody.innerHTML=items.length?`<div class="insight-list">${items.map((x,i)=>`<article class="insight-item"><div class="insight-number">${i+1}</div><div class="insight-copy"><p>${esc(x.text)}</p><div class="insight-meta"><span>${esc(x.source)}${x.date?` · ${esc(x.date)}`:''}</span><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">View Source ↗</a></div></div></article>`).join('')}</div><p class="insight-disclaimer">Sourced strategic signals for orientation, not investment advice.</p>`:'<p class="small-note">No sourced insights are currently attached to this sector.</p>';
+ insightsSub.textContent=`${items.length} verified insight${items.length===1?'':'s'} · published within 30 days · ten words each`;
+ insightsBody.innerHTML=items.length?`<div class="insight-list">${items.map((x,i)=>`<article class="insight-item"><div class="insight-number">${i+1}</div><div class="insight-copy"><p>${esc(x.text)}</p><div class="insight-meta"><span>${esc(x.source)} · ${esc(x.date)}</span><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">View Source ↗</a></div></div></article>`).join('')}</div><p class="insight-disclaimer">Only verified items from the rolling previous 30 days appear. Sourced strategic signals, not investment advice.</p>`:'<p class="small-note">No verified insight published during the previous 30 days.</p>';
  insightsDialog.showModal();
 }
 
@@ -298,7 +303,10 @@ function openUpdates(){const d=document.getElementById('updatesDialog');document
 function openEditor(){const d=document.getElementById('editorDialog');document.getElementById('editorDialogBody').innerHTML=`<div class="editor-grid"><div><h3>Sector data</h3><textarea id="sectorEditor">${esc(JSON.stringify(APP_DATA.sectors,null,2))}</textarea></div><div><h3>Updates & signals</h3><textarea id="updateEditor">${esc(JSON.stringify({updates:APP_DATA.updates,signals:APP_DATA.signals},null,2))}</textarea></div></div><p class="small-note">Edits apply to the current browser session only. Use Export to save a JSON snapshot for the next build.</p><p><button class="action-btn primary" id="applyEdits">Apply Session Edits</button> <button class="action-btn" id="exportData">Export JSON</button></p>`;d.showModal();document.getElementById('applyEdits').onclick=()=>{try{APP_DATA.sectors=JSON.parse(document.getElementById('sectorEditor').value);const x=JSON.parse(document.getElementById('updateEditor').value);APP_DATA.updates=x.updates;APP_DATA.signals=x.signals;applyView(activeView);alert('Session data applied. Structural card changes require reopening the generated file.')}catch(e){alert('JSON error: '+e.message)}};document.getElementById('exportData').onclick=()=>{const blob=new Blob([JSON.stringify(APP_DATA,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ai-dna-data.json';a.click();URL.revokeObjectURL(a.href)}}
 
 document.querySelectorAll('.sector-head').forEach(btn=>btn.addEventListener('click',e=>{if(e.target.closest('.update'))return;openSector(btn.closest('.sector-card').dataset.sector)}));
-document.querySelectorAll('.update').forEach(badge=>{badge.setAttribute('role','button');badge.setAttribute('tabindex','0');const name=badge.closest('.sector-card').dataset.sector;badge.setAttribute('aria-label',`Open ${badge.textContent} sourced insights for ${name}`);const open=e=>{e.preventDefault();e.stopPropagation();openSectorInsights(name)};badge.addEventListener('click',open);badge.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){open(e)}})});
+function initializeFreshInsightBadges(){
+ document.querySelectorAll('.sector-card').forEach(card=>{const name=card.dataset.sector,items=freshSectorInsights(name),head=card.querySelector('.sector-head');let badge=head.querySelector('.update');if(!items.length){badge?.remove();return}if(!badge){badge=document.createElement('span');badge.className='update';head.appendChild(badge)}badge.textContent=items.length;badge.setAttribute('role','button');badge.setAttribute('tabindex','0');badge.setAttribute('title',`${items.length} verified insight${items.length===1?'':'s'} from the last 30 days`);badge.setAttribute('aria-label',`Open ${items.length} verified insights from the last 30 days for ${name}`);const open=e=>{e.preventDefault();e.stopPropagation();openSectorInsights(name)};badge.addEventListener('click',open);badge.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){open(e)}})});
+}
+initializeFreshInsightBadges();
 document.querySelectorAll('.brand').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();if(e.shiftKey){addCompare(btn.dataset.company)}else openCompany(btn.dataset.company)}));
 document.getElementById('close').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});modal.addEventListener('close',()=>{if(activeMarketRequest){activeMarketRequest.abort();activeMarketRequest=null}});document.querySelectorAll('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());swotDialog?.addEventListener('click',e=>{if(e.target===swotDialog)swotDialog.close()});insightsDialog?.addEventListener('click',e=>{if(e.target===insightsDialog)insightsDialog.close()});
 const search=document.getElementById('search');search.addEventListener('input',()=>{const q=search.value.toLowerCase().trim();cards.forEach(c=>{c.classList.toggle('dimmed',!!q&&!c.textContent.toLowerCase().includes(q));c.classList.toggle('focused',!!q&&c.textContent.toLowerCase().includes(q))})});
