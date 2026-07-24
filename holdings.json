@@ -1,0 +1,99 @@
+[
+  {
+    "symbol": "ASML",
+    "nasdaq_symbol": "ASML",
+    "stooq_symbol": "asml.us",
+    "name": "ASML Holding",
+    "shares": 55.0
+  },
+  {
+    "symbol": "MELI",
+    "nasdaq_symbol": "MELI",
+    "stooq_symbol": "meli.us",
+    "name": "MercadoLibre",
+    "shares": 3.0
+  },
+  {
+    "symbol": "MU",
+    "nasdaq_symbol": "MU",
+    "stooq_symbol": "mu.us",
+    "name": "Micron Technology",
+    "shares": 15.0017
+  },
+  {
+    "symbol": "NVDA",
+    "nasdaq_symbol": "NVDA",
+    "stooq_symbol": "nvda.us",
+    "name": "NVIDIA",
+    "shares": 33.0
+  },
+  {
+    "symbol": "TSM",
+    "nasdaq_symbol": "TSM",
+    "stooq_symbol": "tsm.us",
+    "name": "Taiwan Semiconductor",
+    "shares": 22.0
+  },
+  {
+    "symbol": "ASTS",
+    "nasdaq_symbol": "ASTS",
+    "stooq_symbol": "asts.us",
+    "name": "AST SpaceMobile",
+    "shares": 30.0
+  },
+  {
+    "symbol": "INFQ",
+    "nasdaq_symbol": "INFQ",
+    "stooq_symbol": "infq.us",
+    "name": "Infleqtion",
+    "shares": 168.0
+  },
+  {
+    "symbol": "ORCL",
+    "nasdaq_symbol": "ORCL",
+    "stooq_symbol": "orcl.us",
+    "name": "Oracle",
+    "shares": 12.0344
+  },
+  {
+    "symbol": "AMZN",
+    "nasdaq_symbol": "AMZN",
+    "stooq_symbol": "amzn.us",
+    "name": "Amazon",
+    "shares": 5.0
+  },
+  {
+    "symbol": "MSFT",
+    "nasdaq_symbol": "MSFT",
+    "stooq_symbol": "msft.us",
+    "name": "Microsoft",
+    "shares": 3.0
+  },
+  {
+    "symbol": "GOOGL",
+    "nasdaq_symbol": "GOOGL",
+    "stooq_symbol": "googl.us",
+    "name": "Alphabet Class A",
+    "shares": 2.0026
+  },
+  {
+    "symbol": "NEE",
+    "nasdaq_symbol": "NEE",
+    "stooq_symbol": "nee.us",
+    "name": "NextEra Energy",
+    "shares": 3.042
+  },
+  {
+    "symbol": "GLAS",
+    "nasdaq_symbol": "GLASF",
+    "stooq_symbol": "glasf.us",
+    "name": "Glass House Brands",
+    "shares": 10.0
+  },
+  {
+    "symbol": "CASH",
+    "name": "IRA Money Market",
+    "shares": 223.69,
+    "fixed_price": 1.0
+  }
+]

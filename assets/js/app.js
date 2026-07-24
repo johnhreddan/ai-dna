@@ -1,6 +1,7 @@
 'use strict';
 const APP_DATA = window.AI_DNA_DATA;
 const modal=document.getElementById('modal'),title=document.getElementById('modalTitle'),body=document.getElementById('modalBody');
+const swotDialog=document.getElementById('swotDialog'),swotTitleEl=document.getElementById('swotDialogTitle'),swotSubEl=document.getElementById('swotDialogSubhead'),swotBody=document.getElementById('swotDialogBody');
 const cards=[...document.querySelectorAll('.sector-card')];
 const compare=[];
 let activeView='Industrial View';
@@ -226,6 +227,20 @@ async function loadYahooData(name,p){
  }finally{if(activeMarketRequest===request)activeMarketRequest=null}
 }
 
+
+function swotFor(name){
+ const entry=(APP_DATA.swot&&APP_DATA.swot[name])||null;
+ if(entry)return entry;
+ return {strength:'Important positioning supports relevance across the growing AI economy.',weakness:'Execution, competition, and cyclicality can limit predictable long-term growth.',opportunity:'AI adoption could expand demand for this company\'s products materially.',threat:'Competition, regulation, or macro pressure could challenge future performance.',updated:'July 2026',disclaimer:'Strategic summary, not investment advice.'};
+}
+function openSwot(name){
+ const p=profile(name),secs=sectorsForCompany(name),s=swotFor(name);
+ swotTitleEl.textContent=`${name} SWOT Analysis`;
+ swotSubEl.textContent=`${p.ticker||'—'} · ${secs.map(x=>x.name).join(' · ')}`;
+ swotBody.innerHTML=`<div class="swot-grid"><article class="swot-card strength"><h3>Strength</h3><p>${esc(s.strength)}</p></article><article class="swot-card weakness"><h3>Weakness</h3><p>${esc(s.weakness)}</p></article><article class="swot-card opportunity"><h3>Opportunity</h3><p>${esc(s.opportunity)}</p></article><article class="swot-card threat"><h3>Threat</h3><p>${esc(s.threat)}</p></article></div><div class="swot-foot"><span>Analysis updated: ${esc(s.updated||APP_DATA.swotMeta?.updated||'July 2026')}</span><span>${esc(s.disclaimer||'Strategic summary, not investment advice.')}</span></div>`;
+ swotDialog.showModal();
+}
+
 function openCompany(name){
  const p=profile(name),secs=sectorsForCompany(name),rels=APP_DATA.relationships.filter(r=>r.source===name||r.target===name),ups=updatesFor(name);
  const description=p.description||companyDescription(name,p,secs);
@@ -259,11 +274,11 @@ function openCompany(name){
  <div class="market-note" id="liveDataNote">Requesting the latest available quote and fundamentals. Missing values will display as N/A, never zero.</div>
  <div class="company-story"><div class="panel"><h3>What the company does</h3><p>${esc(description)}</p></div><div class="panel why-box"><h3>Why it matters</h3><p>${esc(why)}</p></div></div>
  <div class="compact-lower"><div class="panel"><h3>AI-DNA assessment</h3><div class="mini-lines"><div class="mini-line"><span>Importance</span><span>${score}/100</span></div><div class="mini-line"><span>Rating</span><span>${esc(p.rating||'Not rated')}</span></div><div class="mini-line"><span>AI exposure</span><span>${esc(p.aiExposure??'—')}</span></div><div class="mini-line"><span>Risk</span><span>${esc(p.risk??'—')}</span></div></div></div><div class="panel"><h3>Key relationships</h3><div class="relationship-compact">${relSummary}</div>${ups.length?`<div class="small-note" style="margin-top:6px">${ups.length} embedded update${ups.length>1?'s':''}</div>`:''}</div></div>
- <div class="company-actions"><button class="action-btn primary" id="mapCompany">Map connections</button><button class="action-btn" id="addCompanyCompare">Add to Compare</button></div>`;
+ <div class="company-actions"><button class="action-btn primary" id="openSwot">SWOT Analysis</button><button class="action-btn" id="mapCompany">Map Connections</button></div>`;
  modal.showModal();
  loadYahooData(name,p);
- document.getElementById('mapCompany').onclick=()=>{highlightCompany(name);modal.close()};
- document.getElementById('addCompanyCompare').onclick=()=>{addCompare(name);modal.close()}
+ document.getElementById('openSwot').onclick=()=>openSwot(name);
+ document.getElementById('mapCompany').onclick=()=>{highlightCompany(name);modal.close()}
 }
 function addCompare(name){if(!compare.includes(name)&&compare.length<2)compare.push(name);updateCompareUI()}
 function updateCompareUI(){document.querySelectorAll('.brand').forEach(b=>{const on=compare.includes(b.dataset.company);b.classList.toggle('selected',on);b.setAttribute('aria-pressed',on)});document.getElementById('compareBtn').textContent=`Compare (${compare.length})`;const tray=document.getElementById('compareTray');tray.hidden=compare.length===0;document.getElementById('compareSummary').textContent=compare.length?compare.join(' vs. '):'Select two companies to compare.'}
@@ -273,7 +288,7 @@ function openEditor(){const d=document.getElementById('editorDialog');document.g
 
 document.querySelectorAll('.sector-head').forEach(btn=>btn.addEventListener('click',()=>openSector(btn.closest('.sector-card').dataset.sector)));
 document.querySelectorAll('.brand').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();if(e.shiftKey){addCompare(btn.dataset.company)}else openCompany(btn.dataset.company)}));
-document.getElementById('close').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});modal.addEventListener('close',()=>{if(activeMarketRequest){activeMarketRequest.abort();activeMarketRequest=null}});document.querySelectorAll('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+document.getElementById('close').onclick=()=>modal.close();modal.addEventListener('click',e=>{if(e.target===modal)modal.close()});modal.addEventListener('close',()=>{if(activeMarketRequest){activeMarketRequest.abort();activeMarketRequest=null}});document.querySelectorAll('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());swotDialog?.addEventListener('click',e=>{if(e.target===swotDialog)swotDialog.close()});
 const search=document.getElementById('search');search.addEventListener('input',()=>{const q=search.value.toLowerCase().trim();cards.forEach(c=>{c.classList.toggle('dimmed',!!q&&!c.textContent.toLowerCase().includes(q));c.classList.toggle('focused',!!q&&c.textContent.toLowerCase().includes(q))})});
 document.getElementById('view').addEventListener('change',e=>applyView(e.target.value));
 document.getElementById('reset').onclick=()=>{search.value='';cards.forEach(c=>c.style.background='');applyView('Industrial View');document.getElementById('view').value='Industrial View'};
