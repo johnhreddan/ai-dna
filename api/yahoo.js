@@ -53,25 +53,35 @@ export default async function handler(req, res) {
 
   try {
     const shortUrl = `${YAHOO}/v8/finance/chart/${encodeURIComponent(symbol)}?range=5d&interval=30m&events=div%2Csplits&includeAdjustedClose=true`;
+    const threeUrl = `${YAHOO}/v8/finance/chart/${encodeURIComponent(symbol)}?range=3y&interval=1wk&events=div%2Csplits&includeAdjustedClose=true`;
     const fiveUrl = `${YAHOO}/v8/finance/chart/${encodeURIComponent(symbol)}?range=5y&interval=1d&events=div%2Csplits&includeAdjustedClose=true`;
-    const [shortSettled, fiveSettled, alpha] = await Promise.all([
+    const [shortSettled, threeSettled, fiveSettled, alpha] = await Promise.all([
       jsonFetch(shortUrl, 'Yahoo Finance').catch(() => null),
+      jsonFetch(threeUrl, 'Yahoo Finance').catch(() => null),
       jsonFetch(fiveUrl, 'Yahoo Finance').catch(() => null),
       alphaOverview(symbol),
     ]);
 
     const short = chartResult(shortSettled);
+    const three = chartResult(threeSettled);
     const five = chartResult(fiveSettled);
-    if (!short && !five) throw new Error('Yahoo price data is temporarily unavailable');
-    const primary = short || five;
+    if (!short && !three && !five) throw new Error('Yahoo price data is temporarily unavailable');
+    const primary = short || three || five;
     const meta = primary?.meta || {};
     const shortPrices = validPrices(short);
+    const threePrices = validPrices(three);
     const fivePrices = validPrices(five);
     const price = firstFinite(meta.regularMarketPrice, shortPrices.at(-1), fivePrices.at(-1));
     const previousClose = firstFinite(meta.regularMarketPreviousClose, meta.chartPreviousClose,
       shortPrices.length > 1 ? shortPrices[shortPrices.length - 2] : null);
     const change = price !== null && previousClose !== null ? price - previousClose : null;
     const changePercent = change !== null && previousClose ? (change / previousClose) * 100 : null;
+    const firstThree = threePrices[0] ?? null;
+    const lastThree = threePrices.at(-1) ?? price;
+    const threeYear = firstThree && lastThree ? ((lastThree / firstThree) - 1) * 100 : null;
+    const threeTimestamps = Array.isArray(three?.timestamp) ? three.timestamp : [];
+    const threeYearStart = threeTimestamps.length ? threeTimestamps[0] : null;
+    const threeYearEnd = threeTimestamps.length ? threeTimestamps.at(-1) : null;
     const firstFive = fivePrices[0] ?? null;
     const lastFive = fivePrices.at(-1) ?? price;
     const fiveYear = firstFive && lastFive ? ((lastFive / firstFive) - 1) * 100 : null;
@@ -110,6 +120,10 @@ export default async function handler(req, res) {
       beta: firstFinite(a.Beta),
       fiveYear,
       cagr,
+      threeYear,
+      threeYearStart,
+      threeYearEnd,
+      threeYearSpark: threePrices.length > 120 ? threePrices.filter((_, i) => i % Math.ceil(threePrices.length / 120) === 0) : threePrices,
       spark: shortPrices.length > 80 ? shortPrices.filter((_, i) => i % Math.ceil(shortPrices.length / 80) === 0) : shortPrices,
       marketTime: firstFinite(meta.regularMarketTime),
       delayedBy: firstFinite(meta.exchangeDataDelayedBy) || 0,

@@ -161,7 +161,7 @@ function fmtPercent(v){return hasNumber(v)?`${Number(v)>=0?'+':''}${fmtNumber(v,
 function fmtCurrency(v,currency='USD'){if(!hasNumber(v))return 'N/A';try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency||'USD',maximumFractionDigits:Number(v)>=100?2:3}).format(Number(v))}catch{return `${fmtNumber(v,2)} ${currency||''}`.trim()}}
 function fmtCompactCurrency(v,currency='USD'){if(!hasNumber(v))return 'N/A';const n=Number(v);try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency||'USD',notation:'compact',maximumFractionDigits:1}).format(n)}catch{return fmtNumber(n,0)}}
 function fmtRange(low,high,currency='USD'){return hasNumber(low)&&hasNumber(high)?`${fmtCurrency(low,currency)} - ${fmtCurrency(high,currency)}`:'N/A'}
-function sparkSvg(points){const vals=(points||[]).filter(Number.isFinite);if(vals.length<2)return '<span class="small-note">Chart unavailable</span>';const w=150,h=50,p=3,min=Math.min(...vals),max=Math.max(...vals),span=max-min||1;const xy=vals.map((v,i)=>[p+i*(w-2*p)/(vals.length-1),h-p-(v-min)*(h-2*p)/span]);const line=xy.map((a,i)=>`${i?'L':'M'}${a[0].toFixed(1)},${a[1].toFixed(1)}`).join(' ');const area=`${line} L${(w-p).toFixed(1)},${(h-p).toFixed(1)} L${p},${h-p} Z`;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="Five-day price chart"><path class="spark-area" d="${area}"></path><path class="spark-line" d="${line}"></path></svg>`}
+function sparkSvg(points,label='Three-year adjusted price chart'){const vals=(points||[]).filter(Number.isFinite);if(vals.length<2)return '<span class="small-note">Chart unavailable</span>';const w=150,h=50,p=3,min=Math.min(...vals),max=Math.max(...vals),span=max-min||1;const xy=vals.map((v,i)=>[p+i*(w-2*p)/(vals.length-1),h-p-(v-min)*(h-2*p)/span]);const line=xy.map((a,i)=>`${i?'L':'M'}${a[0].toFixed(1)},${a[1].toFixed(1)}`).join(' ');const area=`${line} L${(w-p).toFixed(1)},${(h-p).toFixed(1)} L${p},${h-p} Z`;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="${esc(label)}"><path class="spark-area" d="${area}"></path><path class="spark-line" d="${line}"></path></svg>`}
 let activeMarketRequest = null;
 const marketCache = new Map();
 const MARKET_TIMEOUT_MS = 9000;
@@ -206,7 +206,8 @@ async function loadYahooData(name,p){
   const set=(id,val)=>{const el=document.getElementById(id);if(el){el.textContent=val;el.closest('.market-metric')?.classList.remove('loading')}};
   document.getElementById('livePrice').textContent=fmtCurrency(d.price,d.currency);
   const ch=document.getElementById('liveChange');ch.textContent=`${fmtPercent(d.changePercent)} today`;ch.className=`quote-change ${d.changePercent>0?'up':d.changePercent<0?'down':'flat'}`;
-  document.getElementById('liveSpark').innerHTML=sparkSvg(d.spark);
+  document.getElementById('liveSpark').innerHTML=sparkSvg(d.threeYearSpark||d.spark);
+  const growth=document.getElementById('threeYearGrowth');if(growth){growth.textContent=`${fmtPercent(d.threeYear)} over three years`;growth.className=`three-year-growth ${d.threeYear>0?'up':d.threeYear<0?'down':'flat'}`}
   set('mPrice',fmtCurrency(d.price,d.currency));
   set('mMarketCap',fmtCompactCurrency(d.marketCap,d.currency));
   set('mTrailingPE',fmtNumber(d.trailingPe,1));set('mForwardPE',fmtNumber(d.forwardPe,1));
@@ -266,7 +267,7 @@ function openCompany(name){
  body.innerHTML=`<div class="company-hero"><div class="brand-mark" style="background:#2d6cdf">${esc(name.split(/\s+/).map(x=>x[0]).join('').slice(0,2))}</div><div><div class="company-name">${esc(name)}</div><div class="company-meta">${esc(p.ticker||'—')} · ${secs.map(s=>esc(s.name)).join(' · ')}</div></div><div class="score-ring" style="--score:${score}"><b>${score}</b><span class="score-caption">Importance</span></div></div>
  <div class="company-actions company-actions-top"><button class="action-btn primary" id="openSwot">SWOT Analysis</button><button class="action-btn" id="mapCompany">Map Connections</button></div>
  <div class="live-status" id="liveStatus"><span><i class="pulse"></i>Connecting to market data</span><span>${esc(p.ticker||'')}</span></div>
- <div class="quote-strip"><div class="quote-main"><div><div class="quote-price" id="livePrice">Loading…</div><div class="quote-change flat" id="liveChange">latest market quote</div></div><div class="company-meta">LIVE MARKET DATA</div></div><div class="spark-wrap" id="liveSpark"><span class="small-note">Loading 5-day chart…</span></div></div>
+ <div class="quote-strip"><div class="quote-main"><div><div class="quote-price" id="livePrice">Loading…</div><div class="quote-change flat" id="liveChange">latest market quote</div></div><div class="company-meta">LIVE MARKET DATA</div></div><div class="spark-panel"><div class="spark-heading"><span>3-Year Stock Growth</span><strong class="three-year-growth flat" id="threeYearGrowth">Loading…</strong></div><div class="spark-wrap" id="liveSpark"><span class="small-note">Loading three-year chart…</span></div></div></div>
  <div class="market-section"><div class="market-section-title">Market and valuation</div><div class="compact-market">
   <div class="market-metric loading"><b id="mPrice">—</b><span>Stock price</span></div>
   <div class="market-metric loading"><b id="mMarketCap">—</b><span>Market cap</span></div>
